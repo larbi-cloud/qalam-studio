@@ -2,992 +2,528 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Qalam Studio — محتواك بالذكاء الاصطناعي</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>قلم ستوديو — محتوى يبيع، في 48 ساعة</title>
+<meta name="description" content="قلم ستوديو: كتابة، تصميم، فيديو وترجمة بالذكاء الاصطناعي للمشاريع المغربية. أول محتوى بين يديك خلال 48 ساعة.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#070A1C">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="قلم ستوديو">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold: #D4AF37;
-  --gold-light: #f0d060;
-  --black: #0a0a0a;
-  --dark: #111111;
-  --dark2: #1a1a1a;
-  --dark3: #242424;
-  --white: #ffffff;
-  --gray: #888888;
-  --light: #f5f5f5;
+:root{
+  --ink:#0E1330;
+  --night:#070A1C;
+  --zellige:#1E7A6E;
+  --saffron:#E8A33D;
+  --paper:#F2EDE3;
+  --muted:#98A0C2;
+  --line:rgba(242,237,227,.14);
+  --display:'Amiri',serif;
+  --body:'IBM Plex Sans Arabic',system-ui,sans-serif;
+  --util:'Noto Kufi Arabic',sans-serif;
+  --wrap:1120px;
 }
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Segoe UI', 'Tahoma', sans-serif;
-  background: var(--black);
-  color: var(--white);
-  overflow-x: hidden;
-  cursor: none;
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--night);color:var(--paper);
+  font-family:var(--body);font-weight:300;line-height:1.85;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
-
-/* CUSTOM CURSOR */
-.cursor {
-  width: 12px; height: 12px;
-  background: var(--gold);
-  border-radius: 50%;
-  position: fixed;
-  top: 0; left: 0;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.1s ease;
-  mix-blend-mode: difference;
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+section{padding:96px 0;position:relative}
+.eyebrow{
+  font-family:var(--util);font-size:.72rem;letter-spacing:.18em;
+  color:var(--saffron);text-transform:uppercase;margin-bottom:18px;display:block;
 }
-.cursor-trail {
-  width: 36px; height: 36px;
-  border: 1px solid rgba(212,175,55,0.4);
-  border-radius: 50%;
-  position: fixed;
-  top: 0; left: 0;
-  pointer-events: none;
-  z-index: 9998;
-  transition: all 0.15s ease;
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.25}
+h2{font-size:clamp(1.9rem,4.6vw,3rem);margin-bottom:16px}
+h3{font-size:1.35rem}
+p.lead{color:var(--muted);font-size:1.05rem;max-width:56ch}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--util);font-size:.95rem;font-weight:600;
+  padding:16px 30px;border-radius:2px;text-decoration:none;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
 }
+.btn-primary{background:var(--saffron);color:#1A1204;box-shadow:0 0 0 rgba(232,163,61,0)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(232,163,61,.28)}
+.btn-ghost{border:1px solid var(--line);color:var(--paper)}
+.btn-ghost:hover{border-color:var(--saffron);color:var(--saffron)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--saffron);outline-offset:3px}
 
-/* NAV */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  padding: 22px 60px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
-  backdrop-filter: blur(10px);
-}
-
-.nav-logo {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--gold);
-  letter-spacing: 3px;
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: 36px;
-  list-style: none;
-}
-
-.nav-links a {
-  color: rgba(255,255,255,0.7);
-  text-decoration: none;
-  font-size: 13px;
-  letter-spacing: 1px;
-  transition: color 0.3s;
-  position: relative;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px; left: 0; right: 0;
-  height: 1px;
-  background: var(--gold);
-  transform: scaleX(0);
-  transition: transform 0.3s;
-}
-
-.nav-links a:hover { color: var(--gold); }
-.nav-links a:hover::after { transform: scaleX(1); }
-
-.nav-cta {
-  padding: 10px 26px;
-  background: var(--gold);
-  color: var(--black);
-  font-size: 13px;
-  font-weight: 700;
-  border-radius: 30px;
-  text-decoration: none;
-  transition: all 0.3s;
-  letter-spacing: 0.5px;
-}
-
-.nav-cta:hover {
-  background: var(--gold-light);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(212,175,55,0.3);
-}
-
-/* HERO */
-#hero {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  padding: 0 20px;
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
+/* ---------- HERO ---------- */
+.hero{
+  min-height:100svh;display:flex;align-items:center;padding:110px 0 90px;
+  position:relative;overflow:hidden;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(212,175,55,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(212,175,55,0.04) 0%, transparent 60%);
-}
-
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(212,175,55,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212,175,55,0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-}
-
-.hero-label {
-  font-size: 11px;
-  letter-spacing: 5px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 28px;
-  opacity: 0;
-  animation: fadeUp 0.8s ease 0.2s forwards;
-}
-
-.hero-title {
-  font-size: clamp(52px, 9vw, 110px);
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -2px;
-  margin-bottom: 30px;
-  opacity: 0;
-  animation: fadeUp 0.8s ease 0.4s forwards;
-}
-
-.hero-title .gold { color: var(--gold); }
-.hero-title .outline {
-  -webkit-text-stroke: 1px rgba(255,255,255,0.3);
-  color: transparent;
-}
-
-.hero-desc {
-  font-size: 16px;
-  color: rgba(255,255,255,0.5);
-  max-width: 500px;
-  line-height: 1.8;
-  margin-bottom: 50px;
-  opacity: 0;
-  animation: fadeUp 0.8s ease 0.6s forwards;
-}
-
-.hero-btns {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  opacity: 0;
-  animation: fadeUp 0.8s ease 0.8s forwards;
-}
-
-.btn-primary {
-  padding: 16px 40px;
-  background: var(--gold);
-  color: var(--black);
-  font-size: 14px;
-  font-weight: 700;
-  border-radius: 50px;
-  text-decoration: none;
-  transition: all 0.3s;
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 40px rgba(212,175,55,0.35);
-  background: var(--gold-light);
-}
-
-.btn-secondary {
-  padding: 16px 40px;
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.7);
-  font-size: 14px;
-  border-radius: 50px;
-  text-decoration: none;
-  transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-.hero-scroll {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255,255,255,0.3);
-  font-size: 11px;
-  letter-spacing: 2px;
-  animation: bounce 2s ease infinite;
-}
-
-.scroll-line {
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(to bottom, var(--gold), transparent);
-}
-
-/* STATS */
-#stats {
-  padding: 70px 60px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 20px;
-}
-
-.stat-number {
-  font-size: 48px;
-  font-weight: 900;
-  color: var(--gold);
-  line-height: 1;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: rgba(255,255,255,0.4);
-  letter-spacing: 1px;
-}
-
-/* SERVICES */
-#services {
-  padding: 120px 60px;
-}
-
-.section-label {
-  font-size: 11px;
-  letter-spacing: 5px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  display: block;
-}
-
-.section-title {
-  font-size: clamp(36px, 5vw, 60px);
-  font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 20px;
-}
-
-.section-desc {
-  color: rgba(255,255,255,0.4);
-  font-size: 15px;
-  max-width: 450px;
-  line-height: 1.8;
-  margin-bottom: 60px;
-}
-
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2px;
-}
-
-.service-card {
-  background: var(--dark2);
-  padding: 50px 45px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s;
-  cursor: none;
-}
-
-.service-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
-.service-card:hover::before { opacity: 1; }
-.service-card:hover { background: var(--dark3); }
-
-.service-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 0; height: 2px;
-  background: var(--gold);
-  transition: width 0.4s;
-}
-
-.service-card:hover::after { width: 100%; }
-
-.service-icon {
-  font-size: 36px;
-  margin-bottom: 24px;
-  display: block;
-}
-
-.service-num {
-  position: absolute;
-  top: 30px; left: 35px;
-  font-size: 80px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.03);
-  line-height: 1;
-}
-
-.service-name {
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 12px;
-}
-
-.service-desc {
-  color: rgba(255,255,255,0.4);
-  font-size: 14px;
-  line-height: 1.8;
-  margin-bottom: 24px;
-}
-
-.service-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tag {
-  padding: 5px 14px;
-  border: 1px solid rgba(212,175,55,0.25);
-  border-radius: 20px;
-  font-size: 11px;
-  color: rgba(212,175,55,0.7);
-  letter-spacing: 0.5px;
-}
-
-/* PORTFOLIO */
-#portfolio {
-  padding: 120px 60px;
-  background: var(--dark2);
-}
-
-.portfolio-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 60px;
-}
-
-.portfolio-item {
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  aspect-ratio: 4/3;
-  cursor: none;
-}
-
-.portfolio-bg {
-  width: 100%; height: 100%;
-  transition: transform 0.5s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 28px;
-  position: relative;
-}
-
-.portfolio-item:hover .portfolio-bg { transform: scale(1.03); }
-
-.p1 { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); }
-.p2 { background: linear-gradient(135deg, #1a0a00, #3d1a00, #6b2d00); }
-.p3 { background: linear-gradient(135deg, #0a1a0a, #0d2b0d, #1a4d1a); }
-.p4 { background: linear-gradient(135deg, #1a001a, #2d002d, #4d004d); }
-.p5 { background: linear-gradient(135deg, #001a1a, #002d2d, #004d4d); }
-.p6 { background: linear-gradient(135deg, #1a1a00, #2d2d00, #4d4d00); }
-
-.portfolio-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
-}
-
-.p-icon {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -60%);
-  font-size: 48px;
-  opacity: 0.6;
-  transition: all 0.4s;
-}
-
-.portfolio-item:hover .p-icon {
-  transform: translate(-50%, -60%) scale(1.2);
-  opacity: 1;
-}
-
-.p-label {
-  position: relative;
-  z-index: 1;
-}
-
-.p-type {
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.p-name {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-/* PRICING */
-#pricing {
-  padding: 120px 60px;
-}
-
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 60px;
-}
-
-.price-card {
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px;
-  padding: 44px 36px;
-  position: relative;
-  transition: all 0.4s;
-  cursor: none;
-}
-
-.price-card:hover {
-  border-color: rgba(212,175,55,0.3);
-  transform: translateY(-8px);
-  background: rgba(212,175,55,0.03);
-}
-
-.price-card.featured {
-  border-color: var(--gold);
-  background: linear-gradient(145deg, rgba(212,175,55,0.08) 0%, transparent 100%);
-}
-
-.price-card.featured::before {
-  content: 'الأكثر طلباً';
-  position: absolute;
-  top: -14px; left: 50%;
-  transform: translateX(-50%);
-  background: var(--gold);
-  color: var(--black);
-  padding: 5px 20px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  white-space: nowrap;
-}
-
-.price-tier {
-  font-size: 12px;
-  letter-spacing: 3px;
-  color: var(--gold);
-  margin-bottom: 20px;
-  display: block;
-}
-
-.price-amount {
-  font-size: 52px;
-  font-weight: 900;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-
-.price-amount span {
-  font-size: 16px;
-  color: rgba(255,255,255,0.4);
-  font-weight: 400;
-}
-
-.price-period {
-  font-size: 13px;
-  color: rgba(255,255,255,0.3);
-  margin-bottom: 32px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.price-features {
-  list-style: none;
-  margin-bottom: 36px;
-}
-
-.price-features li {
-  padding: 10px 0;
-  font-size: 14px;
-  color: rgba(255,255,255,0.65);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.price-features li:last-child { border: none; }
-
-.check {
-  width: 20px; height: 20px;
-  background: rgba(212,175,55,0.15);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold);
-  font-size: 10px;
-  flex-shrink: 0;
-}
-
-.price-btn {
-  display: block;
-  text-align: center;
-  padding: 15px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.3s;
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.7);
-}
-
-.price-btn:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-.price-card.featured .price-btn {
-  background: var(--gold);
-  color: var(--black);
-  border-color: var(--gold);
-}
-
-.price-card.featured .price-btn:hover {
-  background: var(--gold-light);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(212,175,55,0.3);
-}
-
-/* PROCESS */
-#process {
-  padding: 120px 60px;
-  background: var(--dark2);
-}
-
-.process-steps {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  margin-top: 70px;
-  position: relative;
-}
-
-.process-steps::before {
-  content: '';
-  position: absolute;
-  top: 30px; right: 12.5%; left: 12.5%;
-  height: 1px;
-  background: linear-gradient(to left, transparent, var(--gold), transparent);
-}
-
-.step {
-  text-align: center;
-  padding: 0 20px;
-  position: relative;
-}
-
-.step-num {
-  width: 60px; height: 60px;
-  border: 1px solid var(--gold);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--gold);
-  margin: 0 auto 24px;
-  background: var(--dark2);
-  position: relative;
-  z-index: 1;
-}
-
-.step-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.step-desc {
-  font-size: 13px;
-  color: rgba(255,255,255,0.4);
-  line-height: 1.7;
-}
-
-/* CONTACT */
-#contact {
-  padding: 120px 60px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-#contact::before {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.contact-title {
-  font-size: clamp(40px, 7vw, 90px);
-  font-weight: 900;
-  line-height: 1;
-  margin-bottom: 20px;
-}
-
-.contact-sub {
-  color: rgba(255,255,255,0.4);
-  font-size: 16px;
-  margin-bottom: 50px;
-}
-
-.contact-btns {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-bottom: 80px;
-}
-
-.contact-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.contact-card {
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
-  padding: 30px 24px;
-  transition: all 0.3s;
-  text-decoration: none;
-  color: var(--white);
-}
-
-.contact-card:hover {
-  border-color: var(--gold);
-  transform: translateY(-4px);
-  background: rgba(212,175,55,0.05);
-}
-
-.contact-card-icon { font-size: 28px; margin-bottom: 12px; display: block; }
-.contact-card-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.contact-card-val { font-size: 12px; color: rgba(255,255,255,0.4); }
-
-/* FOOTER */
-footer {
-  padding: 40px 60px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-logo { font-size: 18px; font-weight: 800; color: var(--gold); letter-spacing: 3px; }
-.footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); }
-
-/* ANIMATIONS */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(8px); }
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.7s ease;
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* FLOATING PARTICLES */
-.particles {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.particle {
-  position: absolute;
-  width: 2px; height: 2px;
-  background: var(--gold);
-  border-radius: 50%;
-  opacity: 0;
-  animation: float linear infinite;
-}
-
-@keyframes float {
-  0% { opacity: 0; transform: translateY(100vh) scale(0); }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.2; }
-  100% { opacity: 0; transform: translateY(-20px) scale(1); }
-}
-
-/* SCROLLBAR */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--black); }
-::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
-
-@media (max-width: 768px) {
-  nav { padding: 18px 24px; }
-  .nav-links { display: none; }
-  #stats { grid-template-columns: repeat(2,1fr); padding: 50px 24px; }
-  #services, #portfolio, #pricing, #process, #contact { padding: 80px 24px; }
-  .services-grid, .portfolio-grid, .pricing-grid, .process-steps, .contact-cards { grid-template-columns: 1fr; }
-  .hero-title { font-size: 42px; }
+    radial-gradient(120% 90% at 85% 8%,rgba(30,122,110,.24),transparent 62%),
+    radial-gradient(80% 60% at 5% 95%,rgba(232,163,61,.13),transparent 62%),
+    var(--night);
+}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0 63px,rgba(242,237,227,.045) 63px 64px);
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 22%,#000 70%,transparent);
+  mask-image:linear-gradient(to bottom,transparent,#000 22%,#000 70%,transparent);
+}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;position:relative}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:10px;letter-spacing:.2em}
+.hero .eyebrow::before{content:"";width:34px;height:1px;background:var(--saffron)}
+.hero h1{font-size:clamp(2.5rem,6.6vw,4.6rem);margin-bottom:24px;line-height:1.18}
+.hero h1 em{font-style:normal;color:var(--saffron)}
+.hero h1 .swap{
+  color:var(--saffron);display:inline-block;min-width:5ch;
+  border-bottom:3px solid rgba(232,163,61,.35);
+}
+.hero h1 .swap span{display:inline-block;animation:flip .5s ease}
+@keyframes flip{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero p.sub{color:var(--muted);font-size:1.14rem;max-width:47ch;margin-bottom:36px}
+.hero p.sub b{color:var(--paper);font-weight:500}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.btn-primary{position:relative;overflow:hidden}
+.btn-primary::after{
+  content:"";position:absolute;top:0;right:-60%;width:45%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  animation:sheen 4.5s ease-in-out 2.4s infinite;
+}
+@keyframes sheen{0%{right:-60%}22%{right:120%}100%{right:120%}}
+.micro{font-family:var(--util);font-size:.76rem;color:var(--muted);margin-bottom:34px}
+.micro b{color:var(--zellige);font-weight:600}
+.scroll{
+  position:absolute;bottom:26px;right:50%;transform:translateX(50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;
+  font-family:var(--util);font-size:.72rem;letter-spacing:.12em;color:var(--muted);
+}
+.scroll:hover{color:var(--saffron)}
+.scroll i{display:block;width:1px;height:46px;background:linear-gradient(var(--saffron),transparent);animation:drop 2s ease-in-out infinite}
+@keyframes drop{0%,100%{opacity:.25;transform:scaleY(.5);transform-origin:top}50%{opacity:1;transform:scaleY(1)}}
+.trust{display:flex;gap:26px;flex-wrap:wrap;font-family:var(--util);font-size:.78rem;color:var(--muted)}
+.trust span::before{content:"◆";color:var(--zellige);margin-left:8px;font-size:.6rem;vertical-align:middle}
+
+/* signature: القلم يكتب */
+.nib{position:relative;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
+.nib svg{width:100%;max-width:420px;overflow:visible}
+.stroke{
+  fill:none;stroke:var(--saffron);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1400;stroke-dashoffset:1400;
+  animation:write 2.6s cubic-bezier(.65,.05,.36,1) .35s forwards;
+}
+.stroke.two{stroke:var(--zellige);stroke-width:5;animation-delay:1.5s}
+@keyframes write{to{stroke-dashoffset:0}}
+.nib-ring{
+  position:absolute;inset:6%;border:1px solid var(--line);border-radius:50%;
+  animation:spin 46s linear infinite;
+}
+.nib-ring::after{
+  content:"";position:absolute;top:-4px;right:50%;width:7px;height:7px;
+  border-radius:50%;background:var(--saffron);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- PAIN ---------- */
+.pain{background:var(--ink);border-block:1px solid var(--line)}
+.pain-list{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:44px}
+.pain-item{padding-right:20px;border-right:2px solid var(--zellige)}
+.pain-item strong{display:block;font-family:var(--display);font-size:1.3rem;margin-bottom:8px}
+.pain-item span{color:var(--muted);font-size:.95rem}
+.pain-cost{
+  margin-top:44px;font-family:var(--util);font-size:.95rem;color:var(--saffron);
+  border-top:1px solid var(--line);padding-top:24px;
+}
+
+/* ---------- SOLUTION REVEAL ---------- */
+.solution{background:var(--night)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:44px;background:var(--line);border:1px solid var(--line)}
+.compare-col{background:var(--ink);padding:32px 28px}
+.compare-col.win{background:linear-gradient(180deg,rgba(30,122,110,.14),var(--ink))}
+.compare-col .tag{font-family:var(--util);font-size:.72rem;letter-spacing:.12em;color:var(--muted);display:block;margin-bottom:10px}
+.compare-col.win .tag{color:var(--saffron)}
+.compare-col h3{margin-bottom:20px}
+.compare-col ul{list-style:none;display:grid;gap:14px}
+.compare-col li{font-size:.95rem;color:var(--muted);padding-right:26px;position:relative}
+.compare-col.old li::before{content:"✕";color:#B36A5E;position:absolute;right:0}
+.compare-col.win li{color:var(--paper)}
+.compare-col.win li::before{content:"✓";color:var(--zellige);position:absolute;right:0}
+
+/* ---------- PROOF ---------- */
+.proof{background:var(--ink)}
+.proof-demo{border:1px solid var(--line);margin-top:44px;display:grid;grid-template-columns:1fr 1fr}
+.proof-demo>div{padding:30px 28px}
+.proof-demo .before{border-inline-start:1px solid var(--line)}
+.proof-demo .label{font-family:var(--util);font-size:.72rem;letter-spacing:.14em;color:var(--saffron);margin-bottom:14px;display:block}
+.proof-demo .before .label{color:var(--muted)}
+.proof-demo p{font-size:1.02rem;line-height:1.9}
+.proof-demo .before p{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(152,160,194,.4)}
+.proof-badges{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:28px}
+.proof-badge{border:1px solid var(--line);padding:24px;text-align:center}
+.proof-badge b{display:block;font-family:var(--display);font-size:1.7rem;color:var(--saffron);margin-bottom:6px}
+.proof-badge span{font-size:.85rem;color:var(--muted)}
+
+/* ---------- GENERATOR (signature interactif) ---------- */
+.gen{background:var(--ink)}
+.gen-box{
+  border:1px solid var(--line);background:linear-gradient(180deg,rgba(30,122,110,.10),transparent);
+  padding:38px;margin-top:36px;
+}
+.gen-form{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+.gen-form input{
+  flex:1 1 220px;background:var(--night);border:1px solid var(--line);color:var(--paper);
+  font-family:var(--body);font-size:1rem;padding:15px 18px;border-radius:2px;
+}
+.gen-form input::placeholder{color:#5C6488}
+.gen-form button{border:0;cursor:pointer}
+.gen-out{display:grid;gap:14px}
+.gen-card{
+  border-right:3px solid var(--saffron);background:rgba(255,255,255,.03);
+  padding:18px 20px;font-size:1rem;opacity:0;transform:translateY(10px);
+  animation:rise .5s ease forwards;
+}
+.gen-card b{font-family:var(--display);color:var(--saffron);display:block;margin-bottom:6px;font-size:1.15rem}
+.gen-card:nth-child(2){animation-delay:.12s}
+.gen-card:nth-child(3){animation-delay:.24s}
+@keyframes rise{to{opacity:1;transform:none}}
+.gen-note{font-family:var(--util);font-size:.78rem;color:var(--muted);margin-top:20px}
+
+/* ---------- PROCESS ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:48px;counter-reset:s}
+.step{position:relative;padding-top:26px;border-top:1px solid var(--line)}
+.step::before{
+  counter-increment:s;content:counter(s,decimal-leading-zero);
+  font-family:var(--util);font-size:.8rem;color:var(--saffron);
+  position:absolute;top:-11px;right:0;background:var(--night);padding-left:12px;
+}
+.step h3{margin-bottom:8px}
+.step p{color:var(--muted);font-size:.95rem}
+
+/* ---------- SERVICES ---------- */
+.services{background:var(--ink)}
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-top:44px;background:var(--line)}
+.svc{background:var(--ink);padding:34px 30px;transition:background .25s ease}
+.svc:hover{background:var(--night)}
+.svc h3{margin-bottom:10px}
+.svc h3::after{content:"";display:block;width:26px;height:2px;background:var(--zellige);margin-top:12px;transition:width .25s ease}
+.svc:hover h3::after{width:70px;background:var(--saffron)}
+.svc p{color:var(--muted);font-size:.95rem}
+
+/* ---------- PORTFOLIO ---------- */
+.portfolio{background:var(--night)}
+.work-list{margin-top:44px;border-top:1px solid var(--line)}
+.work-row{
+  display:grid;grid-template-columns:64px 1fr 1fr;gap:26px;
+  padding:34px 0;border-bottom:1px solid var(--line);align-items:start;
+  transition:background .2s ease;
+}
+.work-row:hover{background:rgba(232,163,61,.035)}
+.work-num{font-family:var(--util);color:var(--saffron);font-size:.85rem;padding-top:6px}
+.work-title h3{margin-bottom:10px}
+.work-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.tag-pill{font-family:var(--util);font-size:.72rem;color:var(--muted);border:1px solid var(--line);padding:5px 13px;border-radius:20px}
+.work-desc p{color:var(--muted);font-size:.95rem}
+.work-desc a{display:inline-flex;align-items:center;gap:6px;margin-top:16px;color:var(--zellige);font-family:var(--util);font-size:.85rem;text-decoration:none}
+.work-desc a:hover{color:var(--saffron)}
+
+/* ---------- ABOUT ---------- */
+.about{background:var(--ink)}
+.about-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start;margin-top:44px}
+.about-mark{
+  aspect-ratio:4/5;border:1px solid var(--line);position:relative;max-width:320px;overflow:hidden;
+}
+.about-mark img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(.15)}
+.about-mark::before{content:"";position:absolute;inset:14px;border:1px solid rgba(242,237,227,.35);pointer-events:none;z-index:1}
+.about-text p{color:var(--muted);font-size:1.03rem;margin-bottom:18px}
+.about-text strong{color:var(--paper);font-weight:500}
+.about-stats{display:flex;gap:38px;margin-top:26px;flex-wrap:wrap}
+.about-stats div b{display:block;font-family:var(--display);font-size:1.8rem;color:var(--saffron)}
+.about-stats div span{font-family:var(--util);font-size:.76rem;color:var(--muted)}
+.about-cta{margin-top:32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.about-cta a{color:var(--zellige);font-family:var(--util);font-size:.9rem;text-decoration:none}
+.about-cta a:hover{color:var(--saffron)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.plan{border:1px solid var(--line);padding:32px 26px;display:flex;flex-direction:column;position:relative}
+.plan.feat{border-color:var(--saffron);background:linear-gradient(180deg,rgba(232,163,61,.08),transparent)}
+.plan.feat::before{
+  content:"الأكثر طلباً";position:absolute;top:-12px;right:26px;background:var(--saffron);
+  color:#1A1204;font-family:var(--util);font-size:.7rem;font-weight:600;padding:4px 12px;
+}
+.plan h3{font-size:1.5rem}
+.price{font-family:var(--util);font-size:2rem;font-weight:600;margin:14px 0 4px}
+.price small{font-size:.8rem;color:var(--muted);font-weight:400}
+.plan ul{list-style:none;margin:20px 0 28px;display:grid;gap:10px}
+.plan li{font-size:.95rem;color:var(--muted);padding-right:22px;position:relative}
+.plan li::before{content:"✓";position:absolute;right:0;color:var(--zellige)}
+.plan .btn{justify-content:center;margin-top:auto}
+
+/* ---------- FAQ ---------- */
+.faq{background:var(--ink)}
+details{border-bottom:1px solid var(--line);padding:20px 0}
+summary{
+  cursor:pointer;list-style:none;font-family:var(--display);font-size:1.2rem;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--saffron);font-family:var(--util);transition:transform .2s ease}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);font-size:.98rem;margin-top:12px;max-width:70ch}
+
+/* ---------- FINAL CTA ---------- */
+.final{text-align:center;background:
+  radial-gradient(70% 100% at 50% 0%,rgba(30,122,110,.25),transparent 70%),var(--night)}
+.final h2{max-width:20ch;margin-inline:auto}
+.final p{color:var(--muted);margin:16px auto 32px;max-width:52ch}
+.guarantee{
+  display:inline-block;font-family:var(--util);font-size:.8rem;color:var(--muted);
+  border:1px dashed var(--line);padding:12px 20px;margin-top:26px;
+}
+footer{border-top:1px solid var(--line);padding:34px 0;font-family:var(--util);font-size:.78rem;color:var(--muted)}
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--saffron)}
+
+/* sticky whatsapp */
+.wa{
+  position:fixed;bottom:22px;left:22px;z-index:50;background:var(--zellige);color:#fff;
+  font-family:var(--util);font-size:.88rem;font-weight:600;text-decoration:none;
+  padding:14px 22px;border-radius:40px;box-shadow:0 12px 30px rgba(0,0,0,.45);
+  display:flex;align-items:center;gap:10px;transition:transform .18s ease;
+}
+.wa:hover{transform:translateY(-3px)}
+
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:880px){
+  section{padding:70px 0}
+  .hero-grid,.pain-list,.steps,.svc-grid,.plans,.compare,.proof-demo,.proof-badges,.about-grid{grid-template-columns:1fr}
+  .work-row{grid-template-columns:1fr;gap:10px}
+  .about-mark{max-width:150px}
+  .proof-demo .before{border-inline-start:0;border-bottom:1px solid var(--line)}
+  .nib{order:-1;max-width:280px;margin-inline:auto}
+  .pain-item{border-right:2px solid var(--zellige)}
+  .gen-box{padding:24px}
+  .wa{left:16px;right:16px;justify-content:center;bottom:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .stroke{stroke-dashoffset:0}
+  .reveal{opacity:1;transform:none}
 }
 </style>
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-trail" id="cursorTrail"></div>
-
-<!-- PARTICLES -->
-<div class="particles" id="particles"></div>
-
-<!-- NAV -->
-<nav>
-  <a href="#" class="nav-logo">QALAM</a>
-  <ul class="nav-links">
-    <li><a href="#services">الخدمات</a></li>
-    <li><a href="#portfolio">الأعمال</a></li>
-    <li><a href="#pricing">الأسعار</a></li>
-    <li><a href="#process">كيف نعمل</a></li>
-  </ul>
-  <a href="#contact" class="nav-cta">تواصل معنا</a>
-</nav>
-
 <!-- HERO -->
-<section id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-
-  <div class="hero-label">وكالة المحتوى الرقمي</div>
-
-  <h1 class="hero-title">
-    محتواك<br>
-    <span class="gold">بالذكاء</span><br>
-    <span class="outline">الاصطناعي</span>
-  </h1>
-
-  <p class="hero-desc">
-    نحول أفكارك إلى محتوى احترافي — كتابة، تصميم، فيديو، وترجمة.
-    بالسرعة التي يحتاجها عملك وبالجودة التي يستحقها جمهورك.
-  </p>
-
-  <div class="hero-btns">
-    <a href="#services" class="btn-primary">اكتشف خدماتنا</a>
-    <a href="#portfolio" class="btn-secondary">شاهد أعمالنا</a>
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">قلم ستوديو — الرباط</span>
+      <h1>محتوى كيبيع<br>لـ<span class="swap" id="swap"><span>المقهى</span></span> ديالك.</h1>
+      <p class="sub">كنكتبو، كنصمّمو وكنمنتجو بالذكاء الاصطناعي — و<b>أول تسليم كيوصلك فـ48 ساعة</b>. نزّل شوية وشوف بعينك كيفاش كيتبدّل النص ديالك قبل ماتخلّص ولو درهم.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#generateur">ولّد نصوص مشروعك — مجاناً</a>
+        <a class="btn btn-ghost" href="#tarifs">شوف الأثمنة</a>
+      </div>
+      <p class="micro">بلا تسجيل، بلا بطاقة بنكية. <b>10 ثواني</b> وغادي تشوف النتيجة.</p>
+      <div class="trust">
+        <span>أول تسليم فـ48 ساعة</span>
+        <span>تعديلين مجاناً</span>
+        <span>ماعجبكش؟ ماكتخلّصش</span>
+      </div>
+    </div>
+    <div class="nib" aria-hidden="true">
+      <div class="nib-ring"></div>
+      <svg viewBox="0 0 400 400">
+        <path class="stroke" d="M310 120 C310 210 300 265 250 285 C205 303 175 275 178 235 C181 198 215 182 240 196"/>
+        <path class="stroke two" d="M150 130 C120 165 105 215 118 255 C128 288 165 300 200 292"/>
+        <circle class="stroke two" cx="330" cy="95" r="6"/>
+      </svg>
+    </div>
   </div>
+  <a class="scroll" href="#generateur">
+    <span>شوف نموذج حقيقي</span>
+    <i></i>
+  </a>
+</header>
 
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    <span>SCROLL</span>
+<!-- PAIN -->
+<section class="pain">
+  <div class="wrap reveal">
+    <span class="eyebrow">واش هادشي كيوقع ليك؟</span>
+    <h2>المنتوج ديالك مزيان. المشكل هو كيفاش كتحكي عليه.</h2>
+    <div class="pain-list">
+      <div class="pain-item"><strong>بوسطات بلا نتيجة</strong><span>كتنشر كل نهار، والتفاعل باقي حبس. المشكل ماشي فالخوارزمية، المشكل فالنص.</span></div>
+      <div class="pain-item"><strong>صور ماكاينش فيها ثقة</strong><span>تصميم ضعيف كيخلي الزبون يشك فالجودة قبل مايشوف المنتوج.</span></div>
+      <div class="pain-item"><strong>وقت ماكاينش</strong><span>كتسيّر مشروعك؛ ماعندكش نهار كامل باش تكتب كابسيون.</span></div>
+    </div>
+    <p class="pain-cost">وكل يوم كتأجّل فيه، كاين زبون شاف صفحتك وما اقتنعش — ومشى لصفحة خاوتك.</p>
   </div>
 </section>
 
-<!-- STATS -->
-<section id="stats">
-  <div class="stat-item reveal">
-    <div class="stat-number" data-target="24">0</div>
-    <div class="stat-label">ساعة للتسليم</div>
+<!-- SOLUTION REVEAL -->
+<section class="solution">
+  <div class="wrap reveal">
+    <span class="eyebrow">الحل ماشي كثرة الشغل</span>
+    <h2>المشكل ماشي خاصك تخدم أكثر. خاصك طريقة أحسن.</h2>
+    <p class="lead">قلم ستوديو ماشي "فريلانسر زايد" غادي يزيد ليك خدمة. هو النظام اللي كيبدّل ساعات ديال التفكير فـ"شنو نكتب" بدقائق ديال الموافقة.</p>
+    <div class="compare">
+      <div class="compare-col old">
+        <span class="tag">الطريقة القديمة</span>
+        <h3>كتخدم بروحك</h3>
+        <ul>
+          <li>كتقعد تفكر شنو تكتب قبل كل بوسط</li>
+          <li>النتيجة كتبدّل حسب المزاج ديالك</li>
+          <li>التصميم كيبقى غير كتابة فوق صورة</li>
+          <li>الوقت اللي كتخسر ماكيتقاسش بالفلوس</li>
+        </ul>
+      </div>
+      <div class="compare-col win">
+        <span class="tag">مع قلم ستوديو</span>
+        <h3>كتصادق وكتنشر</h3>
+        <ul>
+          <li>خطة نشر جاهزة، كل شهر، بلا ماتفكر</li>
+          <li>نبرة واحدة ثابتة كتبني الثقة مع الوقت</li>
+          <li>تصميم مبني على هوية بصرية حقيقية</li>
+          <li>ثمن ثابت تعرفه من البداية، بلا مفاجآت</li>
+        </ul>
+      </div>
+    </div>
   </div>
-  <div class="stat-item reveal" style="transition-delay:0.1s">
-    <div class="stat-number" data-target="4">0</div>
-    <div class="stat-label">خدمات متكاملة</div>
+</section>
+
+<!-- GENERATOR -->
+<section class="gen" id="generateur">
+  <div class="wrap reveal">
+    <span class="eyebrow">جرّبها قبل ماتخلّص</span>
+    <h2>كتب نوع النشاط ديالك، وشوف النتيجة فـ10 ثواني.</h2>
+    <p class="lead">هادي عيّنة أوتوماتيكية. الخدمة الحقيقية كتزيد البحث على السوق ديالك، الصور، والنشر.</p>
+    <div class="gen-box">
+      <div class="gen-form">
+        <input id="biz" type="text" placeholder="مثلاً: مقهى، صالون حلاقة، متجر ملابس" aria-label="نوع النشاط">
+        <input id="city" type="text" placeholder="المدينة (مثلاً: الرباط)" aria-label="المدينة">
+        <button class="btn btn-primary" id="go" type="button">ولّد النصوص</button>
+      </div>
+      <div class="gen-out" id="out" aria-live="polite"></div>
+      <p class="gen-note">عجباتك؟ هاد النصوص غير جزء صغير من الباك ديال «النمو». الباقي كيجي بالصور والفيديو وخطة نشر شهرية.</p>
+    </div>
   </div>
-  <div class="stat-item reveal" style="transition-delay:0.2s">
-    <div class="stat-number" data-target="3">0</div>
-    <div class="stat-label">لغات</div>
-  </div>
-  <div class="stat-item reveal" style="transition-delay:0.3s">
-    <div class="stat-number" data-target="100">0</div>
-    <div class="stat-label">% جودة مضمونة</div>
+</section>
+
+<!-- PROCESS -->
+<section>
+  <div class="wrap reveal">
+    <span class="eyebrow">3 مراحل، بلا تعقيد</span>
+    <h2>من رسالة واتساب إلى محتوى جاهز للنشر.</h2>
+    <div class="steps">
+      <div class="step"><h3>كتحكي لينا</h3><p>15 دقيقة مكالمة أو رسالة: شنو كتبيع، لمن، وشنو بغيتي توصل.</p></div>
+      <div class="step"><h3>كنصايبو</h3><p>كنجمعو الذكاء الاصطناعي مع مراجعة بشرية. أول تسليم فـ48 ساعة.</p></div>
+      <div class="step"><h3>كتصادق وتنشر</h3><p>تعديلين مجاناً. من بعد كتخلّص، وكيمشي المحتوى للنشر.</p></div>
+    </div>
   </div>
 </section>
 
 <!-- SERVICES -->
-<section id="services">
-  <span class="section-label reveal">— خدماتنا</span>
-  <h2 class="section-title reveal">كل ما تحتاجه<br>في مكان واحد</h2>
-  <p class="section-desc reveal">
-    من الكلمة الأولى إلى المنتج النهائي — نغطي كل احتياجات محتواك الرقمي باحترافية وسرعة.
-  </p>
+<section class="services">
+  <div class="wrap reveal">
+    <span class="eyebrow">الخدمات</span>
+    <h2>كلشي اللي كيحتاجو مشروعك باش يبان محترف.</h2>
+    <div class="svc-grid">
+      <div class="svc"><h3>كتابة المحتوى</h3><p>كابسيونات، وصف المنتوجات، نصوص إعلانات، ومقالات — بالدارجة، العربية أو الفرنسية.</p></div>
+      <div class="svc"><h3>التصميم</h3><p>بوسطات سوشيال ميديا، أفيشات، لوگو، وهوية بصرية مبنية على ألوان ثابتة.</p></div>
+      <div class="svc"><h3>الفيديو</h3><p>ريلز وفيديوهات قصيرة بالصوت والمونتاج، معدّة خصيصاً لإنستغرام وتيك توك.</p></div>
+      <div class="svc"><h3>الترجمة</h3><p>عربية / فرنسية / إنجليزية بترجمة تحافظ على المعنى التجاري ماشي غير الكلمات.</p></div>
+    </div>
+  </div>
+</section>
 
-  <div class="services-grid">
-    <div class="service-card reveal">
-      <div class="service-num">01</div>
-      <span class="service-icon">✍️</span>
-      <h3 class="service-name">كتابة المحتوى</h3>
-      <p class="service-desc">مقالات احترافية، بوستات جذابة، وسكريبتات مقنعة — محتوى يصل إلى الجمهور ويُحدث الأثر.</p>
-      <div class="service-tags">
-        <span class="tag">مقالات SEO</span>
-        <span class="tag">بوستات سوشيال</span>
-        <span class="tag">سكريبتات</span>
-        <span class="tag">نشرات بريدية</span>
+<!-- PROOF -->
+<section class="proof">
+  <div class="wrap reveal">
+    <span class="eyebrow">شوف الفرق بعينك</span>
+    <h2>هادي نفس المعلومة، بوجهين مختلفين.</h2>
+    <p class="lead">مثال حقيقي على شكل النص قبل وبعد — ماشي زيادة كلام، غير طريقة أوضح فالتفكير.</p>
+    <div class="proof-demo">
+      <div class="before">
+        <span class="label">قبل</span>
+        <p>عندنا قهوة زوينة فالرباط، اجيو تشوفو وتذوقو، كاين قهوة، شاي، وحلويات، الجو كيعجب الجميع.</p>
+      </div>
+      <div class="after">
+        <span class="label">مع قلم ستوديو</span>
+        <p>فنجان القهوة اللي كيخليك تبطئ. جو دافئ فقلب الرباط، وحلويات مصنوعة يوم بيوم. تجربة، ماشي غير طلبية.</p>
       </div>
     </div>
-
-    <div class="service-card reveal" style="transition-delay:0.1s">
-      <div class="service-num">02</div>
-      <span class="service-icon">🎨</span>
-      <h3 class="service-name">تصميم وصور AI</h3>
-      <p class="service-desc">تصاميم بصرية مذهلة وصور توليدية احترافية — هوية مرئية تعكس قيمة علامتك التجارية.</p>
-      <div class="service-tags">
-        <span class="tag">تصاميم سوشيال</span>
-        <span class="tag">هوية بصرية</span>
-        <span class="tag">إعلانات</span>
-        <span class="tag">صور AI</span>
-      </div>
-    </div>
-
-    <div class="service-card reveal" style="transition-delay:0.15s">
-      <div class="service-num">03</div>
-      <span class="service-icon">🎬</span>
-      <h3 class="service-name">فيديو وريلز</h3>
-      <p class="service-desc">محتوى فيديو احترافي بدون كاميرا — ريلز قصيرة وفيديوهات يوتيوب تجذب المشاهدين.</p>
-      <div class="service-tags">
-        <span class="tag">ريلز إنستغرام</span>
-        <span class="tag">فيديو يوتيوب</span>
-        <span class="tag">تيك توك</span>
-        <span class="tag">موشن غرافيك</span>
-      </div>
-    </div>
-
-    <div class="service-card reveal" style="transition-delay:0.2s">
-      <div class="service-num">04</div>
-      <span class="service-icon">🌐</span>
-      <h3 class="service-name">ترجمة وتحرير</h3>
-      <p class="service-desc">ترجمة دقيقة وتحرير احترافي بثلاث لغات — محتوى يصل لجمهور أوسع بجودة لا تُنكر.</p>
-      <div class="service-tags">
-        <span class="tag">عربي</span>
-        <span class="tag">فرنسي</span>
-        <span class="tag">إنجليزي</span>
-        <span class="tag">تحرير أكاديمي</span>
-      </div>
+    <div class="proof-badges">
+      <div class="proof-badge"><b>48h</b><span>من الطلب لأول محتوى جاهز</span></div>
+      <div class="proof-badge"><b>0 درهم</b><span>إيلا ماعجبكش أول تسليم</span></div>
+      <div class="proof-badge"><b>شهري</b><span>بلا التزام طويل، توقف وقتما بغيتي</span></div>
     </div>
   </div>
 </section>
 
 <!-- PORTFOLIO -->
-<section id="portfolio">
-  <span class="section-label reveal">— أعمالنا</span>
-  <h2 class="section-title reveal">نماذج من<br>البورتفوليو</h2>
-
-  <div class="portfolio-grid">
-    <div class="portfolio-item reveal">
-      <div class="portfolio-bg p1">
-        <div class="p-icon">✍️</div>
-        <div class="p-label">
-          <div class="p-type">كتابة</div>
-          <div class="p-name">مقال: الذكاء الاصطناعي وثورة المحتوى</div>
+<section class="portfolio">
+  <div class="wrap reveal">
+    <span class="eyebrow">شغلي</span>
+    <h2>ماشي كنتكلم على التقنية. كنبنيها.</h2>
+    <p class="lead">هادو شي مشاريع حقيقية بنيتهم بيدي — من موقع فندق كامل حتى تطبيق بالذكاء الاصطناعي. كل مشروع كيبيّن نفس المبدأ: نتيجة نظيفة، بلا تعقيد زايد.</p>
+    <div class="work-list">
+      <div class="work-row">
+        <span class="work-num">01</span>
+        <div class="work-title"><h3>موقع فندق أبي رقراق</h3>
+          <div class="work-tags"><span class="tag-pill">تصميم ويب</span><span class="tag-pill">5 لغات</span><span class="tag-pill">SEO</span></div>
         </div>
+        <div class="work-desc"><p>موقع كامل بخمس لغات لفندق عندو 69 غرفة، مع حجز مباشر عبر واتساب وبنية SEO كاملة باش يبان الفندق فأول نتائج البحث.</p></div>
+      </div>
+      <div class="work-row">
+        <span class="work-num">02</span>
+        <div class="work-title"><h3>نظام تسيير الفندق (PMS)</h3>
+          <div class="work-tags"><span class="tag-pill">أداة داخلية</span><span class="tag-pill">عربية RTL</span></div>
+        </div>
+        <div class="work-desc"><p>نظام تسيير كامل لفندق عندو 69 غرفة: حجوزات، فواتير، إقفال اليوم، ومطابق للضريبة المغربية — كلشي بواجهة عربية.</p></div>
+      </div>
+      <div class="work-row">
+        <span class="work-num">03</span>
+        <div class="work-title"><h3>Shufha</h3>
+          <div class="work-tags"><span class="tag-pill">ذكاء اصطناعي</span><span class="tag-pill">PWA</span></div>
+        </div>
+        <div class="work-desc"><p>تطبيق ويب كيتعرّف على المنتوجات من صورة وحدة، مبني على Anthropic API وSupabase.</p><a href="https://shufha.netlify.app" target="_blank" rel="noopener">shufha.netlify.app ↗</a></div>
+      </div>
+      <div class="work-row">
+        <span class="work-num">04</span>
+        <div class="work-title"><h3>خط إنتاج محتوى بالذكاء الاصطناعي</h3>
+          <div class="work-tags"><span class="tag-pill">فيديو</span><span class="tag-pill">صوت</span><span class="tag-pill">نشر</span></div>
+        </div>
+        <div class="work-desc"><p>بنيت خط إنتاج كامل لعدة قنوات يوتيوب وتيك توك بالعربية: كتابة، تصويت، صور، مونتاج، ونشر أوتوماتيكي.</p></div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="portfolio-item reveal" style="transition-delay:0.1s">
-      <div class="portfolio-bg p2">
-        <div class="p-icon">🎨</div>
-        <div class="p-label">
-          <div class="p-type">تصميم</div>
-          <div class="p-name">هوية بصرية لشركة تقنية</div>
+<!-- ABOUT -->
+<section class="about">
+  <div class="wrap reveal">
+    <span class="eyebrow">عني</span>
+    <h2>الشخص اللي غادي يخدم مشروعك.</h2>
+    <div class="about-grid">
+      <div class="about-mark"><img src="larbi-about.jpg" alt="لعربي، مؤسس قلم ستوديو، فاستقبال فندق أبي رقراق" loading="lazy"></div>
+      <div class="about-text">
+        <p><strong>سميتي لعربي</strong>، من الرباط. كنخدم فاستقبال فندق أبي رقراق منذ 2011 — يعني كنعرف من قريب شنو كيبان "محترف" وشنو كيبان "مستعجل" فعين الزبون.</p>
+        <p>هاد الخبرة ديال 15 عام فالضيافة هي اللي بنات قلم ستوديو: ماشي ستوديو كيبيع كلام زوين، بل ستوديو كيفهم كيفاش تكسب ثقة زبون فأول 3 ثواني.</p>
+        <p>كنخدم بالذكاء الاصطناعي، ولكن كل حاجة كتخرج ليك كتعدّى من مراجعة بشرية قبل ماتوصلك.</p>
+        <div class="about-stats">
+          <div><b>15+</b><span>عام فالضيافة</span></div>
+          <div><b>4</b><span>مشاريع تقنية كاملة</span></div>
+          <div><b>48h</b><span>أول تسليم</span></div>
         </div>
-      </div>
-    </div>
-
-    <div class="portfolio-item reveal" style="transition-delay:0.2s">
-      <div class="portfolio-bg p3">
-        <div class="p-icon">🎬</div>
-        <div class="p-label">
-          <div class="p-type">فيديو</div>
-          <div class="p-name">ريلز: 5 أدوات AI تغير عملك</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="portfolio-item reveal" style="transition-delay:0.1s">
-      <div class="portfolio-bg p4">
-        <div class="p-icon">📱</div>
-        <div class="p-label">
-          <div class="p-type">سوشيال ميديا</div>
-          <div class="p-name">إدارة محتوى شهري كامل</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="portfolio-item reveal" style="transition-delay:0.2s">
-      <div class="portfolio-bg p5">
-        <div class="p-icon">🌐</div>
-        <div class="p-label">
-          <div class="p-type">ترجمة</div>
-          <div class="p-name">ترجمة موقع تجاري كامل</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="portfolio-item reveal" style="transition-delay:0.3s">
-      <div class="portfolio-bg p6">
-        <div class="p-icon">⚡</div>
-        <div class="p-label">
-          <div class="p-type">محتوى متكامل</div>
-          <div class="p-name">إطلاق علامة تجارية رقمية</div>
+        <div class="about-cta">
+          <a class="btn btn-primary" href="https://wa.me/212660195584?text=سلام%20لعربي،%20عندي%20مشروع%20بغيت%20نتكلم%20معاك%20عليه" target="_blank" rel="noopener">كلمني عن مشروعك</a>
+          <a href="https://instagram.com/qalam.studio" target="_blank" rel="noopener">@qalam.studio ↗</a>
         </div>
       </div>
     </div>
@@ -995,200 +531,126 @@ footer {
 </section>
 
 <!-- PRICING -->
-<section id="pricing">
-  <span class="section-label reveal">— الأسعار</span>
-  <h2 class="section-title reveal">باقات لكل<br>احتياج</h2>
-  <p class="section-desc reveal">اختر الباقة المناسبة لمشروعك — يمكن الترقية في أي وقت.</p>
-
-  <div class="pricing-grid">
-    <div class="price-card reveal">
-      <span class="price-tier">STARTER</span>
-      <div class="price-amount">1,500 <span>درهم</span></div>
-      <div class="price-period">شهرياً — للمشاريع الصغيرة</div>
-      <ul class="price-features">
-        <li><span class="check">✓</span> 15 بوست سوشيال ميديا</li>
-        <li><span class="check">✓</span> مقالان كاملان</li>
-        <li><span class="check">✓</span> 5 تصاميم احترافية</li>
-        <li><span class="check">✓</span> تعديلات مجانية</li>
-      </ul>
-      <a href="#contact" class="price-btn">ابدأ الآن</a>
-    </div>
-
-    <div class="price-card featured reveal" style="transition-delay:0.1s">
-      <span class="price-tier">GROWTH</span>
-      <div class="price-amount">3,000 <span>درهم</span></div>
-      <div class="price-period">شهرياً — للشركات المتوسطة</div>
-      <ul class="price-features">
-        <li><span class="check">✓</span> 30 بوست سوشيال ميديا</li>
-        <li><span class="check">✓</span> 4 مقالات احترافية</li>
-        <li><span class="check">✓</span> 10 تصاميم</li>
-        <li><span class="check">✓</span> 2 ريلز شهرياً</li>
-        <li><span class="check">✓</span> أولوية في التسليم</li>
-      </ul>
-      <a href="#contact" class="price-btn">ابدأ الآن</a>
-    </div>
-
-    <div class="price-card reveal" style="transition-delay:0.2s">
-      <span class="price-tier">PREMIUM</span>
-      <div class="price-amount">5,500 <span>درهم</span></div>
-      <div class="price-period">شهرياً — للعلامات التجارية</div>
-      <ul class="price-features">
-        <li><span class="check">✓</span> محتوى غير محدود</li>
-        <li><span class="check">✓</span> 4 ريلز احترافية</li>
-        <li><span class="check">✓</span> هوية بصرية كاملة</li>
-        <li><span class="check">✓</span> ترجمة شهرية</li>
-        <li><span class="check">✓</span> مدير حساب مخصص</li>
-      </ul>
-      <a href="#contact" class="price-btn">ابدأ الآن</a>
+<section id="tarifs">
+  <div class="wrap reveal">
+    <span class="eyebrow">الأثمنة — بلا مفاجآت</span>
+    <h2>اختار الباك اللي مناسب لمرحلة مشروعك.</h2>
+    <div class="plans">
+      <div class="plan">
+        <h3>البداية</h3>
+        <div class="price">1,500 <small>درهم / شهر</small></div>
+        <ul>
+          <li>8 بوسطات (نص + تصميم)</li>
+          <li>خطة نشر شهرية</li>
+          <li>تعديلين على كل بوسط</li>
+        </ul>
+        <a class="btn btn-ghost" href="#whatsabout" onclick="wa('البداية')">بغيت نبدا بهاد الباك</a>
+      </div>
+      <div class="plan feat">
+        <h3>النمو</h3>
+        <div class="price">3,000 <small>درهم / شهر</small></div>
+        <ul>
+          <li>16 بوسط + 4 ريلز</li>
+          <li>نصوص إعلانات جاهزة</li>
+          <li>تقرير أداء كل شهر</li>
+          <li>أولوية فالتسليم (24 ساعة)</li>
+        </ul>
+        <a class="btn btn-primary" href="#whatsabout" onclick="wa('النمو')">بغيت هاد الباك</a>
+      </div>
+      <div class="plan">
+        <h3>بريميوم</h3>
+        <div class="price">5,500 <small>درهم / شهر</small></div>
+        <ul>
+          <li>محتوى غير محدود بخطة متفق عليها</li>
+          <li>هوية بصرية كاملة</li>
+          <li>ترجمة لثلاث لغات</li>
+          <li>مرافقة أسبوعية</li>
+        </ul>
+        <a class="btn btn-ghost" href="#whatsabout" onclick="wa('بريميوم')">بغيت نعرف كثر على بريميوم</a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- PROCESS -->
-<section id="process">
-  <span class="section-label reveal">— كيف نعمل</span>
-  <h2 class="section-title reveal">4 خطوات<br>للمحتوى المثالي</h2>
-
-  <div class="process-steps">
-    <div class="step reveal">
-      <div class="step-num">1</div>
-      <h3 class="step-title">التواصل</h3>
-      <p class="step-desc">راسلنا وأخبرنا عن مشروعك واحتياجاتك بالتفصيل</p>
-    </div>
-    <div class="step reveal" style="transition-delay:0.1s">
-      <div class="step-num">2</div>
-      <h3 class="step-title">التخطيط</h3>
-      <p class="step-desc">نضع خطة محتوى مخصصة تناسب أهدافك وجمهورك</p>
-    </div>
-    <div class="step reveal" style="transition-delay:0.2s">
-      <div class="step-num">3</div>
-      <h3 class="step-title">الإنتاج</h3>
-      <p class="step-desc">فريقنا بالذكاء الاصطناعي ينتج المحتوى بسرعة وجودة</p>
-    </div>
-    <div class="step reveal" style="transition-delay:0.3s">
-      <div class="step-num">4</div>
-      <h3 class="step-title">التسليم</h3>
-      <p class="step-desc">تسليم في أقل من 24 ساعة مع تعديلات مجانية</p>
-    </div>
+<!-- FAQ -->
+<section class="faq">
+  <div class="wrap reveal">
+    <span class="eyebrow">أسئلة كتجينا بزاف</span>
+    <h2>باقي عندك شك؟</h2>
+    <details open><summary>واش المحتوى كيتصايب كامل بالذكاء الاصطناعي؟</summary><p>الذكاء الاصطناعي كيسرّع الخدمة، ولكن كل نص وكل تصميم كيتراجع بالعين البشرية قبل مايمشي ليك. النتيجة: سرعة الآلة بجودة الإنسان.</p></details>
+    <details><summary>شحال كيدوم أول تسليم؟</summary><p>48 ساعة من اللحظة اللي كنجمعو فيها المعلومات ديال مشروعك. باك «النمو» عندو أولوية فـ24 ساعة.</p></details>
+    <details><summary>واش خاصني نتعاقد لمدة طويلة؟</summary><p>لا. الباكات شهرية. تقدر توقف فأي وقت بلا شروط.</p></details>
+    <details><summary>واش كتخدمو مع نشاطي ديالي بالضبط؟</summary><p>خدمنا مع مطاعم، متاجر إلكترونية، خدمات محلية ومهنيين مستقلين. صيفط لينا نوع النشاط وغادي نقولو ليك بصراحة واش نقدرو نزيدو ليك قيمة.</p></details>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact">
-  <h2 class="contact-title reveal">
-    جاهز<br>للانطلاق؟
-  </h2>
-  <p class="contact-sub reveal">تواصل معنا اليوم وابدأ رحلتك مع محتوى يُحدث فرقاً حقيقياً</p>
-
-  <div class="contact-btns reveal">
-    <a href="https://wa.me/212600000000" class="btn-primary">واتساب — تواصل الآن</a>
-    <a href="mailto:hello@qalamstudio.ma" class="btn-secondary">أرسل إيميل</a>
-  </div>
-
-  <div class="contact-cards">
-    <a href="https://instagram.com/qalam.studio" class="contact-card reveal">
-      <span class="contact-card-icon">📸</span>
-      <div class="contact-card-name">إنستغرام</div>
-      <div class="contact-card-val">@qalam.studio</div>
-    </a>
-    <a href="https://wa.me/212600000000" class="contact-card reveal" style="transition-delay:0.1s">
-      <span class="contact-card-icon">💬</span>
-      <div class="contact-card-name">واتساب</div>
-      <div class="contact-card-val">+212 6 00 00 00 00</div>
-    </a>
-    <a href="https://linkedin.com/company/qalam-studio" class="contact-card reveal" style="transition-delay:0.2s">
-      <span class="contact-card-icon">💼</span>
-      <div class="contact-card-name">لينكدإن</div>
-      <div class="contact-card-val">Qalam Studio</div>
-    </a>
+<!-- FINAL CTA -->
+<section class="final" id="whatsabout">
+  <div class="wrap reveal">
+    <span class="eyebrow">القرار بسيط، مالا؟</span>
+    <h2>1,500 درهم فالشهر، ولا شهر كامل ديال الوقت اللي كتخسر مجاناً؟</h2>
+    <p>باك «البداية» كيكلّفك أقل من ثمن عشاء لجوج فالرباط — ويرجع ليك بمحتوى شهر كامل، جاهز، بلا ماتفكر فيه. وإيلا أول تسليم ماعجبكش، ماكتخلّص حتى درهم. الخسارة الوحيدة الممكنة هي ماتجربش.</p>
+    <a class="btn btn-primary" id="whatsapp" href="https://wa.me/212660195584?text=سلام،%20بغيت%20نعرف%20كثر%20على%20قلم%20ستوديو" target="_blank" rel="noopener">ابدا الشهر ديالك بمحتوى جاهز</a>
+    <div class="guarantee">ضمان بلا شروط: إيلا ماعجبكش أول تسليم، ماكتخلّص والو. عدد محدود ديال المشاريع الجداد كل شهر.</div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <div class="footer-logo">QALAM STUDIO</div>
-  <div class="footer-copy">© 2025 Qalam Studio — جميع الحقوق محفوظة</div>
+  <div class="wrap foot">
+    <span>قلم ستوديو — الرباط، المغرب</span>
+    <span><a href="https://instagram.com/qalam.studio" target="_blank" rel="noopener">@qalam.studio</a></span>
+  </div>
 </footer>
 
+<a class="wa" href="https://wa.me/212660195584" target="_blank" rel="noopener">واتساب — جواب فأقل من ساعة</a>
+
 <script>
-// CURSOR
-const cursor = document.getElementById('cursor');
-const trail = document.getElementById('cursorTrail');
-let mx = 0, my = 0, tx = 0, ty = 0;
-
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx - 6 + 'px';
-  cursor.style.top = my - 6 + 'px';
-});
-
-function animateTrail() {
-  tx += (mx - tx) * 0.12;
-  ty += (my - ty) * 0.12;
-  trail.style.left = tx - 18 + 'px';
-  trail.style.top = ty - 18 + 'px';
-  requestAnimationFrame(animateTrail);
-}
-animateTrail();
-
-// PARTICLES
-const container = document.getElementById('particles');
-for (let i = 0; i < 25; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  p.style.cssText = `
-    left: ${Math.random() * 100}%;
-    animation-duration: ${8 + Math.random() * 15}s;
-    animation-delay: ${Math.random() * 10}s;
-    width: ${1 + Math.random() * 2}px;
-    height: ${1 + Math.random() * 2}px;
-    opacity: ${0.3 + Math.random() * 0.4};
-  `;
-  container.appendChild(p);
+// --- الكلمة المتبدّلة فالعنوان ---
+const words=['المقهى','المتجر','الصالون','المطعم','الفندق'];
+const swapEl=document.getElementById('swap');
+let wi=0;
+if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  setInterval(()=>{wi=(wi+1)%words.length;swapEl.innerHTML='<span>'+words[wi]+'</span>';},2200);
 }
 
-// SCROLL REVEAL
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('visible'), 50);
-    }
+// --- مولّد النصوص ---
+const out = document.getElementById('out');
+const tpl = (b,c)=>[
+  {t:"إعلان قصير",v:`${b} فـ${c} — الجودة اللي كتستاهل، والثمن اللي كيبقى معقول. سيفط لينا رسالة وحنا نكملو الباقي.`},
+  {t:"كابسيون سوشيال",v:`ماشي غير ${b}. هادي تجربة كاملة فـ${c}. جرّبها مرة وحدة وغادي تفهم علاش زبنائنا كيرجعو.`},
+  {t:"دعوة عاجلة",v:`العرض ديال هاد الأسبوع فـ${b} ديالنا بـ${c} محدود. حجز مقعدك دابا قبل مايسالي.`}
+];
+function render(b,c){
+  out.innerHTML='';
+  tpl(b,c).forEach(x=>{
+    const d=document.createElement('div');
+    d.className='gen-card';
+    d.innerHTML=`<b>${x.t}</b>${x.v}`;
+    out.appendChild(d);
   });
-}, { threshold: 0.1 });
+}
+document.getElementById('go').addEventListener('click',()=>{
+  const b=(document.getElementById('biz').value||'مقهى').trim();
+  const c=(document.getElementById('city').value||'الرباط').trim();
+  render(b,c);
+});
+document.getElementById('biz').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('go').click()});
 
-reveals.forEach(el => observer.observe(el));
-
-// COUNT UP
-function countUp(el, target) {
-  let current = 0;
-  const step = target / 60;
-  const timer = setInterval(() => {
-    current += step;
-    if (current >= target) { current = target; clearInterval(timer); }
-    el.textContent = Math.floor(current);
-  }, 16);
+// --- واتساب حسب الباك ---
+function wa(pack){
+  const url='https://wa.me/212660195584?text='+encodeURIComponent('سلام، بغيت باك "'+pack+'" ديال قلم ستوديو.');
+  window.open(url,'_blank','noopener');
+  return false;
 }
 
-const statObserver = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const nums = e.target.querySelectorAll('[data-target]');
-      nums.forEach(n => countUp(n, parseInt(n.dataset.target)));
-      statObserver.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.5 });
+// --- ظهور تدريجي ---
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-statObserver.observe(document.getElementById('stats'));
-
-// NAV SCROLL
-const nav = document.querySelector('nav');
-window.addEventListener('scroll', () => {
-  nav.style.background = window.scrollY > 50
-    ? 'rgba(10,10,10,0.97)'
-    : 'linear-gradient(to bottom, rgba(10,10,10,0.95), transparent)';
-});
+// --- تسجيل الـservice worker (باش الموقع يتثبت كتطبيق) ---
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
 </script>
 </body>
 </html>
