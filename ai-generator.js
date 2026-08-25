@@ -15,11 +15,14 @@
     const style = document.createElement("style");
     style.id = "qalam-ai-options-style";
     style.textContent = `
+      .gen-details{flex:1 1 100%;display:grid;gap:7px}
+      .gen-details label,.gen-option label{font-family:var(--util);font-size:.72rem;color:var(--muted)}
+      .gen-details textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:82px;background:var(--night);border:1px solid var(--line);color:var(--paper);font-family:var(--body);font-size:.94rem;line-height:1.7;padding:13px 14px;border-radius:2px}
+      .gen-details textarea::placeholder{color:var(--muted);opacity:.85}
+      .gen-details textarea:focus-visible,.gen-option select:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
       .gen-options{flex:1 1 100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
       .gen-option{display:grid;gap:7px}
-      .gen-option label{font-family:var(--util);font-size:.72rem;color:var(--muted)}
       .gen-option select{width:100%;background:var(--night);border:1px solid var(--line);color:var(--paper);font-family:var(--body);font-size:.94rem;padding:13px 14px;border-radius:2px;cursor:pointer}
-      .gen-option select:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
       .gen-card-text{white-space:pre-line}
       @media(max-width:720px){.gen-options{grid-template-columns:1fr}}
     `;
@@ -49,17 +52,46 @@
     return { wrap, select };
   }
 
+  function makeDetailsField() {
+    const wrap = document.createElement("div");
+    wrap.id = "qalam-ai-details";
+    wrap.className = "gen-details";
+
+    const label = document.createElement("label");
+    label.htmlFor = "details";
+    label.textContent = "تفاصيل النشاط / نقاط القوة (اختياري)";
+
+    const textarea = document.createElement("textarea");
+    textarea.id = "details";
+    textarea.rows = 3;
+    textarea.maxLength = 500;
+    textarea.setAttribute("aria-label", label.textContent);
+    textarea.placeholder = "مثال: أكل مغربي تقليدي، كسكس الجمعة، مناسب للعائلات، توصيل داخل الرباط... كتب غير المعلومات الحقيقية.";
+
+    wrap.append(label, textarea);
+    return { wrap, textarea };
+  }
+
   function installOptions(form, button) {
-    const existing = document.getElementById("qalam-ai-options");
-    if (existing) {
+    let details = document.getElementById("details");
+    let optionsWrap = document.getElementById("qalam-ai-options");
+
+    if (!details) {
+      const detailsField = makeDetailsField();
+      details = detailsField.textarea;
+      form.insertBefore(detailsField.wrap, button);
+    }
+
+    if (optionsWrap) {
       return {
+        details,
         contentType: document.getElementById("contentType"),
         tone: document.getElementById("tone"),
         language: document.getElementById("language"),
       };
     }
 
-    const optionsWrap = document.createElement("div");
+    optionsWrap = document.createElement("div");
     optionsWrap.id = "qalam-ai-options";
     optionsWrap.className = "gen-options";
 
@@ -89,7 +121,12 @@
     optionsWrap.append(content.wrap, tone.wrap, language.wrap);
     form.insertBefore(optionsWrap, button);
 
-    return { contentType: content.select, tone: tone.select, language: language.select };
+    return {
+      details,
+      contentType: content.select,
+      tone: tone.select,
+      language: language.select,
+    };
   }
 
   function renderCards(out, items) {
@@ -131,6 +168,7 @@
     button.addEventListener("click", async () => {
       const business = (bizInput.value || "").trim();
       const city = (cityInput.value || "الرباط").trim();
+      const details = (controls.details?.value || "").trim().slice(0, 500);
       const contentType = controls.contentType?.value || "mixed";
       const tone = controls.tone?.value || "professional";
       const language = controls.language?.value || "darija";
@@ -145,13 +183,13 @@
       button.disabled = true;
       button.textContent = "كنولّدو المحتوى...";
       button.setAttribute("aria-busy", "true");
-      renderMessage(out, "الذكاء الاصطناعي خدام", "ثواني قليلة وغادي تظهر ليك 3 اقتراحات حسب النوع، النبرة واللغة اللي اخترتي.");
+      renderMessage(out, "الذكاء الاصطناعي خدام", "ثواني قليلة وغادي تظهر ليك 3 اقتراحات مبنية غير على المعلومات اللي عطيتينا.");
 
       try {
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ business, city, contentType, tone, language }),
+          body: JSON.stringify({ business, city, details, contentType, tone, language }),
         });
 
         let data = null;
@@ -174,11 +212,7 @@
       } catch (error) {
         console.error("Qalam Studio AI generator error:", error);
         const detail = String(error?.message || "خطأ غير معروف").slice(0, 700);
-        renderMessage(
-          out,
-          "تعذّر توليد المحتوى — تفاصيل تقنية",
-          detail
-        );
+        renderMessage(out, "تعذّر توليد المحتوى — تفاصيل تقنية", detail);
       } finally {
         button.disabled = false;
         button.textContent = originalLabel;
