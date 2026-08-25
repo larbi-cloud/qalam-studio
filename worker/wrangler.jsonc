@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "qalam-studio-ai",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-25",
+  "workers_dev": true,
+  "vars": {
+    "OPENROUTER_MODEL": "openrouter/free",
+    "SITE_NAME": "Qalam Studio",
+    "SITE_URL": "https://larbi-cloud.github.io/qalam-studio/",
+    "ALLOWED_ORIGINS": "https://larbi-cloud.github.io,http://localhost:5500,http://127.0.0.1:5500"
+  }
+}
