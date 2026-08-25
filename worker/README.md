@@ -10,7 +10,7 @@ The OpenRouter API key must never be stored in `index.html`, client-side JavaScr
 
 ## Model
 
-The default model is `openrouter/free`. Change `OPENROUTER_MODEL` in `wrangler.jsonc` later if Qalam Studio needs a specific paid or premium model.
+The production model is configured in `wrangler.jsonc`. Qalam Studio currently pins a free OpenRouter model rather than relying on the rotating `openrouter/free` router.
 
 ## Local/deploy setup
 
@@ -27,14 +27,17 @@ When Wrangler asks for the secret value, paste the OpenRouter key there. Do not 
 ## Endpoints
 
 - `GET /health` — service status
-- `POST /api/generate` — generate three Moroccan Arabic marketing texts
+- `POST /api/generate` — generate AI marketing content
 
 Example request body:
 
 ```json
 {
   "business": "مقهى مختص",
-  "city": "الرباط"
+  "city": "الرباط",
+  "contentType": "mixed",
+  "tone": "professional",
+  "language": "darija"
 }
 ```
 
@@ -45,26 +48,27 @@ Example response shape:
   "ok": true,
   "model": "provider/model-used",
   "items": [
-    { "title": "إعلان قصير", "text": "..." },
-    { "title": "كابسيون", "text": "..." },
-    { "title": "CTA", "text": "..." }
+    { "title": "فكرة 1", "text": "..." },
+    { "title": "فكرة 2", "text": "..." },
+    { "title": "فكرة 3", "text": "..." }
   ]
 }
 ```
 
 ## Cloudflare Build
 
-Production branch: `feat/openrouter-ai-generator`
-Root directory: `worker/`
-Deploy command: `npx wrangler deploy`
+Production branch: `main`
+Root directory: `worker`
+Deploy command: `npx wrangler deploy --config wrangler.jsonc`
 
 ## Rollout status
 
-- Cloudflare Worker deployed successfully.
+- Cloudflare Worker deployed successfully from the feature branch during initial rollout.
 - `/health` endpoint verified.
-- OpenRouter generation verified with `openrouter/free`.
+- OpenRouter generation verified.
 - Frontend generator wired through `ai-generator.js`.
-- Service worker cache includes the AI generator script.
+- Generator supports content type, tone, and language controls.
+- Service worker uses network-first delivery for live generator files.
 - API key is stored only as a Cloudflare encrypted secret.
 
 ## Security notes
