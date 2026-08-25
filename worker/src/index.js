@@ -45,6 +45,14 @@ function cleanText(value, maxLength) {
     .slice(0, maxLength);
 }
 
+function sanitizeGeneratedText(value, maxLength) {
+  return cleanText(value, maxLength)
+    .replace(/(?:\+?212|0)[5-7](?:[\s.-]*\d){7,8}/g, "")
+    .replace(/0[5-7](?:[\s.-]*[Xx*•]){4,}/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function extractAssistantText(content) {
   if (typeof content === "string") return content;
   if (Array.isArray(content)) {
@@ -72,7 +80,7 @@ function parseGeneratedItems(text) {
       .slice(0, 3)
       .map((item, index) => ({
         title: cleanText(item?.title || `فكرة ${index + 1}`, 80),
-        text: cleanText(item?.text || item?.content || "", 700),
+        text: sanitizeGeneratedText(item?.text || item?.content || "", 700),
       }))
       .filter((item) => item.text);
 
@@ -84,7 +92,7 @@ function parseGeneratedItems(text) {
   return [
     {
       title: "نتيجة الذكاء الاصطناعي",
-      text: cleanText(text, 1800),
+      text: sanitizeGeneratedText(text, 1800),
     },
   ];
 }
@@ -150,10 +158,14 @@ export default {
     const systemPrompt = [
       "أنت Senior Arabic Copywriter داخل Qalam Studio ومتخصص في السوق المغربي.",
       "اكتب بدارجة مغربية طبيعية وواضحة، بلا مبالغة وبلا ادعاءات غير قابلة للتحقق.",
-      "الهدف هو إعطاء صاحب المشروع 3 قطع محتوى مختلفة وقابلة للنشر فوراً.",
+      "المعلومات الوحيدة المسموح استعمالها كحقائق هي نوع النشاط والمدينة/السوق التي يعطيها المستخدم.",
+      "ممنوع اختراع أرقام هاتف أو واتساب أو روابط أو عناوين أو أثمنة أو خصومات أو عروض أو ساعات عمل أو مواعيد أو سنوات خبرة أو جوائز أو خدمات أو مزايا غير مذكورة.",
+      "ممنوع استعمال placeholders مثل 06XX أو XX XX XX XX أو أرقام تجريبية.",
+      "إذا احتجت دعوة للتواصل استعمل صياغة عامة مثل: تواصل معنا، راسلنا، أو زورنا، بدون أي بيانات اتصال مخترعة.",
+      "الهدف هو إعطاء صاحب المشروع 3 قطع محتوى مختلفة وقابلة للنشر فوراً بدون إضافة معلومات تجارية غير مؤكدة.",
       "أرجع JSON صالح فقط بدون Markdown وبدون أي نص خارج JSON.",
       'الصيغة المطلوبة: {"items":[{"title":"...","text":"..."},{"title":"...","text":"..."},{"title":"...","text":"..."}]}',
-      "العناصر الثلاثة: إعلان قصير قوي، Caption للسوشيال ميديا، وCTA/عرض قصير يشجع على التواصل بدون خلق ندرة أو خصم غير مذكور.",
+      "العناصر الثلاثة: إعلان قصير قوي، Caption للسوشيال ميديا، ودعوة قصيرة للتواصل بدون ندرة أو خصم أو عرض غير مذكور.",
     ].join("\n");
 
     const userPrompt = `النشاط: ${business}\nالمدينة/السوق: ${market}\nاكتب النصوص الثلاثة الآن.`;
@@ -174,7 +186,7 @@ export default {
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt },
           ],
-          temperature: 0.8,
+          temperature: 0.65,
           max_tokens: 700,
         }),
       });
