@@ -4,9 +4,6 @@
   "main": "src/index.js",
   "compatibility_date": "2026-08-25",
   "workers_dev": true,
-  "secrets": {
-    "required": ["OPENROUTER_API_KEY"]
-  },
   "vars": {
     "OPENROUTER_MODEL": "openrouter/free",
     "SITE_NAME": "Qalam Studio",
