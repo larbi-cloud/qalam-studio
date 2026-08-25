@@ -1,5 +1,28 @@
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
+const CONTENT_TYPES = {
+  mixed: "أنشئ 3 قطع مختلفة: إعلان قصير، Caption للسوشيال ميديا، وCTA قصير للتواصل.",
+  caption: "أنشئ 3 Captions مختلفة للسوشيال ميديا، كل واحدة قابلة للنشر مباشرة.",
+  reel: "أنشئ 3 Hooks/أفكار قصيرة لفيديو Reel أو TikTok، كل واحدة تبدأ بجملة توقف السكرول ثم payoff مختصر.",
+  ad: "أنشئ 3 إعلانات قصيرة مختلفة ومقنعة، بدون ادعاءات أو عروض غير مؤكدة.",
+  product: "أنشئ 3 صيغ مختلفة لوصف المنتج أو الخدمة، واضحة ومقنعة بدون اختراع مواصفات غير معطاة.",
+};
+
+const TONES = {
+  professional: "نبرة احترافية، واضحة وموثوقة.",
+  friendly: "نبرة ودية، قريبة وإنسانية.",
+  luxury: "نبرة فاخرة، هادئة وراقية بدون مبالغة.",
+  direct: "نبرة مباشرة، مختصرة وبيعية بدون ضغط أو ادعاءات.",
+  playful: "نبرة خفيفة، إبداعية وذكية بدون ابتذال.",
+};
+
+const LANGUAGES = {
+  darija: "اكتب بالدارجة المغربية الطبيعية والواضحة.",
+  ar: "اكتب بالعربية الفصحى المعاصرة والواضحة.",
+  fr: "Écris en français naturel, clair et adapté au marché marocain.",
+  en: "Write in natural, clear English suitable for a Moroccan business audience.",
+};
+
 function allowedOrigins(env) {
   return (env.ALLOWED_ORIGINS || "https://larbi-cloud.github.io,http://localhost:5500,http://127.0.0.1:5500")
     .split(",")
@@ -53,6 +76,11 @@ function sanitizeGeneratedText(value, maxLength) {
     .trim();
 }
 
+function normalizeChoice(value, allowed, fallback) {
+  const key = cleanText(value, 30);
+  return Object.prototype.hasOwnProperty.call(allowed, key) ? key : fallback;
+}
+
 function extractAssistantText(content) {
   if (typeof content === "string") return content;
   if (Array.isArray(content)) {
@@ -80,7 +108,7 @@ function parseGeneratedItems(text) {
       .slice(0, 3)
       .map((item, index) => ({
         title: cleanText(item?.title || `فكرة ${index + 1}`, 80),
-        text: sanitizeGeneratedText(item?.text || item?.content || "", 700),
+        text: sanitizeGeneratedText(item?.text || item?.content || "", 850),
       }))
       .filter((item) => item.text);
 
@@ -92,7 +120,7 @@ function parseGeneratedItems(text) {
   return [
     {
       title: "نتيجة الذكاء الاصطناعي",
-      text: sanitizeGeneratedText(text, 1800),
+      text: sanitizeGeneratedText(text, 2000),
     },
   ];
 }
@@ -147,6 +175,9 @@ export default {
 
     const business = cleanText(body?.business, 80);
     const city = cleanText(body?.city, 80);
+    const contentType = normalizeChoice(body?.contentType, CONTENT_TYPES, "mixed");
+    const tone = normalizeChoice(body?.tone, TONES, "professional");
+    const language = normalizeChoice(body?.language, LANGUAGES, "darija");
 
     if (!business) {
       return jsonResponse({ error: "business is required" }, 400, origin, env);
@@ -156,19 +187,27 @@ export default {
     const market = city || "المغرب";
 
     const systemPrompt = [
-      "أنت Senior Arabic Copywriter داخل Qalam Studio ومتخصص في السوق المغربي.",
-      "اكتب بدارجة مغربية طبيعية وواضحة، بلا مبالغة وبلا ادعاءات غير قابلة للتحقق.",
+      "أنت Senior Copywriter داخل Qalam Studio ومتخصص في السوق المغربي وصناعة المحتوى التجاري.",
+      LANGUAGES[language],
+      TONES[tone],
+      CONTENT_TYPES[contentType],
       "المعلومات الوحيدة المسموح استعمالها كحقائق هي نوع النشاط والمدينة/السوق التي يعطيها المستخدم.",
       "ممنوع اختراع أرقام هاتف أو واتساب أو روابط أو عناوين أو أثمنة أو خصومات أو عروض أو ساعات عمل أو مواعيد أو سنوات خبرة أو جوائز أو خدمات أو مزايا غير مذكورة.",
       "ممنوع استعمال placeholders مثل 06XX أو XX XX XX XX أو أرقام تجريبية.",
       "إذا احتجت دعوة للتواصل استعمل صياغة عامة مثل: تواصل معنا، راسلنا، أو زورنا، بدون أي بيانات اتصال مخترعة.",
-      "الهدف هو إعطاء صاحب المشروع 3 قطع محتوى مختلفة وقابلة للنشر فوراً بدون إضافة معلومات تجارية غير مؤكدة.",
+      "كل نتيجة يجب أن تكون مختلفة بوضوح عن الأخرى ومفيدة وقابلة للنشر مباشرة.",
       "أرجع JSON صالح فقط بدون Markdown وبدون أي نص خارج JSON.",
       'الصيغة المطلوبة: {"items":[{"title":"...","text":"..."},{"title":"...","text":"..."},{"title":"...","text":"..."}]}',
-      "العناصر الثلاثة: إعلان قصير قوي، Caption للسوشيال ميديا، ودعوة قصيرة للتواصل بدون ندرة أو خصم أو عرض غير مذكور.",
     ].join("\n");
 
-    const userPrompt = `النشاط: ${business}\nالمدينة/السوق: ${market}\nاكتب النصوص الثلاثة الآن.`;
+    const userPrompt = [
+      `النشاط: ${business}`,
+      `المدينة/السوق: ${market}`,
+      `نوع المحتوى: ${contentType}`,
+      `النبرة: ${tone}`,
+      `اللغة: ${language}`,
+      "أنشئ 3 اقتراحات الآن.",
+    ].join("\n");
 
     let upstream;
     try {
@@ -186,8 +225,8 @@ export default {
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt },
           ],
-          temperature: 0.65,
-          max_tokens: 700,
+          temperature: tone === "playful" ? 0.8 : 0.65,
+          max_tokens: 900,
         }),
       });
     } catch (_) {
@@ -222,6 +261,7 @@ export default {
       {
         ok: true,
         model: data?.model || model,
+        request: { contentType, tone, language },
         items: parseGeneratedItems(assistantText),
       },
       200,
