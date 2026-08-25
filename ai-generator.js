@@ -162,7 +162,7 @@
         }
 
         if (!response.ok || !data?.ok) {
-          throw new Error(data?.detail || data?.error || "وقع مشكل فالخدمة.");
+          throw new Error(data?.detail || data?.error || `HTTP ${response.status}`);
         }
 
         const items = Array.isArray(data.items) ? data.items : [];
@@ -173,10 +173,11 @@
         renderCards(out, items);
       } catch (error) {
         console.error("Qalam Studio AI generator error:", error);
+        const detail = String(error?.message || "خطأ غير معروف").slice(0, 700);
         renderMessage(
           out,
-          "تعذّر توليد المحتوى",
-          "جرّب من جديد بعد شوية. إلا بقا المشكل، تواصل معنا على واتساب."
+          "تعذّر توليد المحتوى — تفاصيل تقنية",
+          detail
         );
       } finally {
         button.disabled = false;
