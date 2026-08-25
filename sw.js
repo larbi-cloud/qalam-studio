@@ -1,6 +1,13 @@
-// قلم ستوديو — service worker بسيط: كيخلي الموقع يتحمل بسرعة ويخدم حتى بلا نت
-const CACHE = "qalam-studio-v3";
-const ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./larbi-about.jpg"];
+const CACHE = "qalam-studio-v4";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./ai-generator.js",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./larbi-about.jpg"
+];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
@@ -16,11 +23,10 @@ self.addEventListener("activate", (e) => {
   self.clients.claim();
 });
 
-// cache-first للأصول ديال الموقع، fallback للنت لأي حاجة أخرى (بحال fonts وواتساب)
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
-  if (url.origin !== self.location.origin) return; // خلي fonts.googleapis.com و wa.me يمشيو للنت مباشرة
+  if (url.origin !== self.location.origin) return;
 
   e.respondWith(
     caches.match(e.request).then(
