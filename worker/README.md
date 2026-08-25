@@ -52,6 +52,14 @@ Example response shape:
 }
 ```
 
+## Cloudflare Build
+
+Production branch: `feat/openrouter-ai-generator`
+Root directory: `worker/`
+Deploy command: `npx wrangler deploy`
+
+This section also serves as a safe build trigger after the Git integration is configured.
+
 ## Security notes
 
 - `OPENROUTER_API_KEY` is a Cloudflare encrypted secret.
