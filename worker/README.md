@@ -58,7 +58,14 @@ Production branch: `feat/openrouter-ai-generator`
 Root directory: `worker/`
 Deploy command: `npx wrangler deploy`
 
-This section also serves as a safe build trigger after the Git integration is configured.
+## Rollout status
+
+- Cloudflare Worker deployed successfully.
+- `/health` endpoint verified.
+- OpenRouter generation verified with `openrouter/free`.
+- Frontend generator wired through `ai-generator.js`.
+- Service worker cache bumped to include the AI generator script.
+- Keep the API key only in Cloudflare encrypted secrets.
 
 ## Security notes
 
@@ -66,4 +73,4 @@ This section also serves as a safe build trigger after the Git integration is co
 - CORS is restricted through `ALLOWED_ORIGINS`.
 - Input length is capped before being sent to OpenRouter.
 - Provider errors are normalized before reaching the browser.
-- Before public launch, add Cloudflare rate limiting and/or Turnstile to reduce automated abuse. CORS alone is not an abuse-prevention mechanism.
+- Before scaling public usage, add Cloudflare rate limiting and/or Turnstile to reduce automated abuse. CORS alone is not an abuse-prevention mechanism.
