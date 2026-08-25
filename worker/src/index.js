@@ -117,12 +117,80 @@ function parseGeneratedItems(text) {
     // Some free models may wrap or ignore the requested JSON format.
   }
 
+  const fallbackText = sanitizeGeneratedText(text, 2000);
+  return fallbackText
+    ? [{ title: "نتيجة الذكاء الاصطناعي", text: fallbackText }]
+    : [];
+}
+
+function suspiciousResponse(text, items) {
+  const normalized = cleanText(text, 300).toLowerCase();
+  if (!normalized) return true;
+  if (/user safety|\bsafety:\s*safe\b|^safe$/i.test(normalized)) return true;
+  if (!Array.isArray(items) || !items.length) return true;
+  return items.every((item) => cleanText(item?.text, 200).length < 12);
+}
+
+function modelCandidates(env) {
   return [
-    {
-      title: "نتيجة الذكاء الاصطناعي",
-      text: sanitizeGeneratedText(text, 2000),
-    },
-  ];
+    env.OPENROUTER_MODEL || "minimax/minimax-m3:free",
+    "qwen/qwen3-next-80b-a3b-instruct:free",
+    "openrouter/free",
+  ].filter((value, index, array) => value && array.indexOf(value) === index);
+}
+
+async function callModel(model, env, systemPrompt, userPrompt, temperature) {
+  let upstream;
+  try {
+    upstream = await fetch(OPENROUTER_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": env.SITE_URL || "https://larbi-cloud.github.io/qalam-studio/",
+        "X-Title": env.SITE_NAME || "Qalam Studio",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature,
+        max_tokens: 900,
+      }),
+    });
+  } catch (_) {
+    return { ok: false, detail: "Could not reach OpenRouter", model };
+  }
+
+  let data;
+  try {
+    data = await upstream.json();
+  } catch (_) {
+    return { ok: false, detail: "Invalid response from OpenRouter", model };
+  }
+
+  if (!upstream.ok) {
+    return {
+      ok: false,
+      detail: cleanText(data?.error?.message || `Provider error ${upstream.status}`, 300),
+      model,
+    };
+  }
+
+  const assistantText = extractAssistantText(data?.choices?.[0]?.message?.content);
+  const items = parseGeneratedItems(assistantText);
+
+  if (suspiciousResponse(assistantText, items)) {
+    return { ok: false, detail: "Model returned an unusable response", model: data?.model || model };
+  }
+
+  return {
+    ok: true,
+    model: data?.model || model,
+    items,
+  };
 }
 
 export default {
@@ -135,7 +203,7 @@ export default {
         {
           ok: true,
           service: "qalam-studio-ai",
-          model: env.OPENROUTER_MODEL || "openrouter/free",
+          models: modelCandidates(env),
         },
         200,
         origin,
@@ -183,9 +251,7 @@ export default {
       return jsonResponse({ error: "business is required" }, 400, origin, env);
     }
 
-    const model = env.OPENROUTER_MODEL || "openrouter/free";
     const market = city || "المغرب";
-
     const systemPrompt = [
       "أنت Senior Copywriter داخل Qalam Studio ومتخصص في السوق المغربي وصناعة المحتوى التجاري.",
       LANGUAGES[language],
@@ -197,7 +263,7 @@ export default {
       "إذا احتجت دعوة للتواصل استعمل صياغة عامة مثل: تواصل معنا، راسلنا، أو زورنا، بدون أي بيانات اتصال مخترعة.",
       "كل نتيجة يجب أن تكون مختلفة بوضوح عن الأخرى ومفيدة وقابلة للنشر مباشرة.",
       "أرجع JSON صالح فقط بدون Markdown وبدون أي نص خارج JSON.",
-      'الصيغة المطلوبة: {"items":[{"title":"...","text":"..."},{"title":"...","text":"..."},{"title":"...","text":"..."}]}',
+      '{"items":[{"title":"...","text":"..."},{"title":"...","text":"..."},{"title":"...","text":"..."}]}',
     ].join("\n");
 
     const userPrompt = [
@@ -209,62 +275,39 @@ export default {
       "أنشئ 3 اقتراحات الآن.",
     ].join("\n");
 
-    let upstream;
-    try {
-      upstream = await fetch(OPENROUTER_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": env.SITE_URL || "https://larbi-cloud.github.io/qalam-studio/",
-          "X-Title": env.SITE_NAME || "Qalam Studio",
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt },
-          ],
-          temperature: tone === "playful" ? 0.8 : 0.65,
-          max_tokens: 900,
-        }),
-      });
-    } catch (_) {
-      return jsonResponse({ error: "Could not reach OpenRouter" }, 502, origin, env);
-    }
-
-    let data;
-    try {
-      data = await upstream.json();
-    } catch (_) {
-      return jsonResponse({ error: "Invalid response from OpenRouter" }, 502, origin, env);
-    }
-
-    if (!upstream.ok) {
-      return jsonResponse(
-        {
-          error: "OpenRouter request failed",
-          detail: cleanText(data?.error?.message || "Unknown provider error", 300),
-        },
-        502,
-        origin,
+    const errors = [];
+    for (const model of modelCandidates(env)) {
+      const result = await callModel(
+        model,
         env,
+        systemPrompt,
+        userPrompt,
+        tone === "playful" ? 0.8 : 0.65,
       );
-    }
 
-    const assistantText = extractAssistantText(data?.choices?.[0]?.message?.content);
-    if (!assistantText) {
-      return jsonResponse({ error: "Model returned an empty response" }, 502, origin, env);
+      if (result.ok) {
+        return jsonResponse(
+          {
+            ok: true,
+            model: result.model,
+            request: { contentType, tone, language },
+            items: result.items,
+          },
+          200,
+          origin,
+          env,
+        );
+      }
+
+      errors.push(`${model}: ${result.detail}`);
     }
 
     return jsonResponse(
       {
-        ok: true,
-        model: data?.model || model,
-        request: { contentType, tone, language },
-        items: parseGeneratedItems(assistantText),
+        error: "All OpenRouter models failed",
+        detail: cleanText(errors.join(" | "), 700),
       },
-      200,
+      502,
       origin,
       env,
     );
