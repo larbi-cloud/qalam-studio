@@ -1,4 +1,4 @@
-const CACHE = "qalam-studio-v4";
+const CACHE = "qalam-studio-v5";
 const ASSETS = [
   "./",
   "./index.html",
