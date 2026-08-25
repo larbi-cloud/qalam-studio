@@ -64,8 +64,8 @@ Deploy command: `npx wrangler deploy`
 - `/health` endpoint verified.
 - OpenRouter generation verified with `openrouter/free`.
 - Frontend generator wired through `ai-generator.js`.
-- Service worker cache bumped to include the AI generator script.
-- Keep the API key only in Cloudflare encrypted secrets.
+- Service worker cache includes the AI generator script.
+- API key is stored only as a Cloudflare encrypted secret.
 
 ## Security notes
 
