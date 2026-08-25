@@ -24,7 +24,11 @@
       .gen-option{display:grid;gap:7px}
       .gen-option select{width:100%;background:var(--night);border:1px solid var(--line);color:var(--paper);font-family:var(--body);font-size:.94rem;padding:13px 14px;border-radius:2px;cursor:pointer}
       .gen-card-text{white-space:pre-line}
-      @media(max-width:720px){.gen-options{grid-template-columns:1fr}}
+      .reel-parts{display:grid;gap:9px;margin-top:12px}
+      .reel-part{display:grid;grid-template-columns:minmax(86px,auto) 1fr;gap:10px;align-items:start;padding:9px 10px;background:rgba(255,255,255,.025);border:1px solid var(--line)}
+      .reel-part-label{font-family:var(--util);font-size:.68rem;font-weight:700;letter-spacing:.04em;color:var(--saffron);direction:ltr;text-align:left}
+      .reel-part-text{font-family:var(--body);line-height:1.75;color:var(--paper)}
+      @media(max-width:720px){.gen-options{grid-template-columns:1fr}.reel-part{grid-template-columns:1fr;gap:4px}.reel-part-label{text-align:right}}
     `;
     document.head.appendChild(style);
   }
@@ -129,12 +133,30 @@
     };
   }
 
+  function reelPart(label, value) {
+    if (!value) return "";
+    return `<div class="reel-part"><span class="reel-part-label">${escapeHtml(label)}</span><span class="reel-part-text">${escapeHtml(value)}</span></div>`;
+  }
+
   function renderCards(out, items) {
     out.innerHTML = "";
     items.slice(0, 3).forEach((item) => {
       const card = document.createElement("div");
       card.className = "gen-card";
-      card.innerHTML = `<b>${escapeHtml(item.title || "نتيجة")}</b><div class="gen-card-text">${escapeHtml(item.text || "")}</div>`;
+
+      const hasReelParts = item && (item.hook || item.retention || item.payoff || item.cta);
+      if (hasReelParts) {
+        card.innerHTML = `
+          <b>${escapeHtml(item.title || "فكرة Reel")}</b>
+          <div class="reel-parts">
+            ${reelPart("HOOK", item.hook)}
+            ${reelPart("RETENTION", item.retention)}
+            ${reelPart("PAYOFF", item.payoff)}
+            ${reelPart("CTA", item.cta)}
+          </div>`;
+      } else {
+        card.innerHTML = `<b>${escapeHtml(item.title || "نتيجة")}</b><div class="gen-card-text">${escapeHtml(item.text || "")}</div>`;
+      }
       out.appendChild(card);
     });
   }
@@ -158,7 +180,6 @@
 
     addGeneratorStyles();
 
-    // Replace the button node to remove the old template-based click listener.
     const button = oldButton.cloneNode(true);
     oldButton.replaceWith(button);
     button.textContent = "ولّد المحتوى";
