@@ -1,59 +1,36 @@
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 const CONTENT_TYPES = {
-  mixed: "أنشئ 3 قطع مختلفة فعلاً: إعلان قصير، Caption للسوشيال ميديا، وCTA/زاوية تواصل قصيرة. كل قطعة تستعمل زاوية نفسية مختلفة ولا تعيد نفس الفكرة بصياغة أخرى.",
-  caption: "أنشئ 3 Captions مختلفة وقابلة للنشر مباشرة. افتح كل Caption بجملة تشد الانتباه، أعطِ قيمة أو صورة ذهنية واضحة، واختم CTA طبيعي. تجنب المقدمات العامة والحشو.",
-  reel: "أنشئ 3 سكريبتات قصيرة لـReel أو TikTok. كل نتيجة يجب أن تتبع بنية HOOK → RETENTION → PAYOFF → CTA وأن تكون قصيرة ومصممة للاحتفاظ بالمشاهد.",
-  ad: "أنشئ 3 إعلانات قصيرة مختلفة ومقنعة. كل إعلان يبدأ بفائدة أو مشكلة واضحة مرتبطة بالنشاط، ثم قيمة مختصرة، ثم CTA طبيعي. بدون ادعاءات أو عروض أو أرقام غير مؤكدة.",
-  product: "أنشئ 3 صيغ مختلفة لوصف المنتج أو الخدمة. ركز على الفائدة وتجربة الزبون ولماذا قد يهتم بها شخص في هذا السوق، بدون اختراع مواصفات أو مميزات غير معطاة.",
+  mixed: "أنشئ 3 قطع مختلفة فعلاً: إعلان قصير، Caption للسوشيال ميديا، وCTA/زاوية تواصل قصيرة.",
+  caption: "أنشئ 3 Captions مختلفة وقابلة للنشر مباشرة، وكل Caption يبدأ بجملة تشد الانتباه وينتهي CTA طبيعي.",
+  reel: "أنشئ 3 سكريبتات قصيرة لـReel أو TikTok ببنية HOOK ثم RETENTION ثم PAYOFF ثم CTA.",
+  ad: "أنشئ 3 إعلانات قصيرة مختلفة ومقنعة، بدون ادعاءات أو عروض أو أرقام غير مؤكدة.",
+  product: "أنشئ 3 صيغ مختلفة لوصف المنتج أو الخدمة، وركز فقط على الفوائد المدعومة بالمعطيات.",
 };
 
 const TONES = {
-  professional: "نبرة احترافية، واضحة وموثوقة، بدون لغة جامدة أو رسمية أكثر من اللازم.",
-  friendly: "نبرة ودية، قريبة وإنسانية، كأن البراند كيهضر مباشرة مع الزبون.",
-  luxury: "نبرة فاخرة، هادئة وراقية، بجمل نظيفة وقليلة المبالغة.",
-  direct: "نبرة مباشرة، مختصرة وبيعية، بجمل قوية وواضحة بدون ضغط أو ادعاءات.",
-  playful: "نبرة خفيفة، إبداعية وذكية، فيها شخصية ولكن بدون ابتذال أو نكات مصطنعة.",
+  professional: "نبرة احترافية، واضحة وموثوقة.",
+  friendly: "نبرة ودية، قريبة وإنسانية.",
+  luxury: "نبرة فاخرة، هادئة وراقية، بلا مبالغة.",
+  direct: "نبرة مباشرة، مختصرة وبيعية بدون ضغط.",
+  playful: "نبرة خفيفة، إبداعية وذكية بدون ابتذال.",
 };
 
 const LANGUAGES = {
   darija: [
-    "اكتب بالدارجة المغربية الطبيعية اللي كتتقال فعلاً فالمغرب، بجمل بسيطة ومسموعة بحال كلام إنسان ماشي ترجمة آلية.",
-    "تجنب الفصحى الثقيلة واللهجات المصرية والخليجية والشامية، وتجنب التراكيب المترجمة حرفياً من الإنجليزية أو الفرنسية.",
-    "ما تستعملش كلمات لاتينية أو فرنسية وسط النص إلا إذا كانت موجودة أصلاً فمعطيات المستخدم أو كانت ضرورية جداً.",
-    "إلا كانت الجملة ما غاديش تبان طبيعية إلا تقرات بصوت عالي لمغربي، عاود صيغها بكلام أبسط.",
+    "اكتب بالدارجة المغربية الطبيعية اللي كتتقال فعلاً فالمغرب.",
+    "تجنب الفصحى الثقيلة واللهجات المصرية والخليجية والشامية والترجمة الحرفية.",
+    "ما تستعمل حتى كلمة فرنسية أو إنجليزية إلا إذا كانت طبيعية جداً فالسياق المغربي.",
+    "راجع الصياغة بصمت قبل الإخراج وخليها سهلة تتقال بصوت عالي.",
   ].join(" "),
-  ar: "اكتب بالعربية الفصحى المعاصرة والواضحة، بأسلوب تسويقي طبيعي وليس إنشائياً.",
-  fr: "Écris en français naturel, fluide et commercial, adapté au public marocain. Évite les tournures génériques et le français artificiel.",
-  en: "Write in natural, concise marketing English suitable for a Moroccan business audience. Avoid generic AI-sounding copy.",
+  ar: "اكتب بالعربية الفصحى المعاصرة والواضحة، بأسلوب تسويقي طبيعي.",
+  fr: "Écris en français naturel, fluide et commercial, adapté au public marocain.",
+  en: "Write in natural, concise marketing English suitable for a Moroccan business audience.",
 };
 
-const CLAIM_GROUPS = [
-  { label: "السبت", terms: ["السبت"] },
-  { label: "الأحد", terms: ["الأحد", "الاحد"] },
-  { label: "الاثنين", terms: ["الاثنين", "الإثنين"] },
-  { label: "الثلاثاء", terms: ["الثلاثاء"] },
-  { label: "الأربعاء", terms: ["الأربعاء", "الاربعاء"] },
-  { label: "الخميس", terms: ["الخميس"] },
-  { label: "الجمعة", terms: ["الجمعة"] },
-  { label: "الطاجين", terms: ["طاجين", "الطاجين"] },
-  { label: "الكسكس", terms: ["كسكس", "الكسكس"] },
-  { label: "الحريرة", terms: ["حريرة", "الحريرة"] },
-  { label: "البسطيلة", terms: ["بسطيلة", "البيسطيلة", "البسطيلة"] },
-  { label: "اللحم", terms: ["لحم", "اللحم", "لحمة"] },
-  { label: "الدجاج", terms: ["دجاج", "الدجاج"] },
-  { label: "السمك", terms: ["سمك", "الحوت", "حوت"] },
-  { label: "التوصيل", terms: ["توصيل", "دليفري", "livraison", "delivery"] },
-  { label: "الحجز", terms: ["حجز", "reservation", "réservation"] },
-  { label: "الإطلالة", terms: ["إطلالة", "اطلالة", "إطلالات", "اطلالات", "vue"] },
-  { label: "التراس", terms: ["تراس", "terrasse"] },
-  { label: "الباركينغ", terms: ["باركينغ", "parking", "موقف السيارات"] },
-  { label: "الواي فاي", terms: ["واي فاي", "wifi", "wi-fi"] },
-  { label: "العائلات", terms: ["عائلي", "عائلية", "العائلة", "العائلات", "familial", "famille"] },
-  { label: "الطزاجة", terms: ["طازج", "طازجة", "طري", "طرية", "fresh", "frais", "fraîche"] },
-];
-
-const DARIJA_RED_FLAGS = ["إزاي", "ازاي", "عايز", "عاوز", "كتير", "شو", "ليش", "هلق", "مو"];
+function cleanText(value, maxLength) {
+  return String(value || "").trim().replace(/\s+/g, " ").slice(0, maxLength);
+}
 
 function allowedOrigins(env) {
   return (env.ALLOWED_ORIGINS || "https://larbi-cloud.github.io,http://localhost:5500,http://127.0.0.1:5500")
@@ -88,169 +65,118 @@ function jsonResponse(payload, status, origin, env) {
   });
 }
 
-function cleanText(value, maxLength) {
-  return String(value || "").trim().replace(/\s+/g, " ").slice(0, maxLength);
+function normalizeChoice(value, map, fallback) {
+  const key = cleanText(value, 30);
+  return Object.prototype.hasOwnProperty.call(map, key) ? key : fallback;
 }
 
-function cleanMultilineText(value, maxLength) {
-  return String(value || "")
-    .replace(/\r\n?/g, "\n")
-    .split("\n")
-    .map((line) => line.trim().replace(/[ \t]+/g, " "))
-    .filter(Boolean)
-    .join("\n")
-    .trim()
-    .slice(0, maxLength);
-}
-
-function sanitizeGeneratedText(value, maxLength) {
-  return cleanMultilineText(value, maxLength)
+function sanitizeText(value, maxLength) {
+  return cleanText(value, maxLength)
     .replace(/(?:\+?212|0)[5-7](?:[\s.-]*\d){7,8}/g, "")
     .replace(/0[5-7](?:[\s.-]*[Xx*•]){4,}/g, "")
-    .replace(/[ \t]{2,}/g, " ")
     .trim();
 }
 
-function normalizeChoice(value, allowed, fallback) {
-  const key = cleanText(value, 30);
-  return Object.prototype.hasOwnProperty.call(allowed, key) ? key : fallback;
-}
-
-function normalizeForScan(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[\u064B-\u065F\u0670]/g, "")
-    .replace(/[أإآ]/g, "ا")
-    .replace(/ى/g, "ي")
-    .replace(/ؤ/g, "و")
-    .replace(/ئ/g, "ي");
-}
-
-function extractAssistantText(content) {
-  if (typeof content === "string") return content;
-  if (Array.isArray(content)) {
-    return content
-      .filter((part) => part && (part.type === "text" || typeof part.text === "string"))
-      .map((part) => part.text || "")
-      .join("\n")
-      .trim();
+function schemaFor(contentType) {
+  if (contentType === "reel") {
+    return {
+      type: "object",
+      additionalProperties: false,
+      required: ["items"],
+      properties: {
+        items: {
+          type: "array",
+          minItems: 3,
+          maxItems: 3,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["title", "hook", "retention", "payoff", "cta"],
+            properties: {
+              title: { type: "string", minLength: 2, maxLength: 80 },
+              hook: { type: "string", minLength: 3, maxLength: 180 },
+              retention: { type: "string", minLength: 4, maxLength: 280 },
+              payoff: { type: "string", minLength: 6, maxLength: 450 },
+              cta: { type: "string", minLength: 2, maxLength: 220 },
+            },
+          },
+        },
+      },
+    };
   }
-  return "";
-}
 
-function parseReelText(value) {
-  const raw = cleanMultilineText(value, 1200);
-  if (!raw) return null;
-  const parts = { hook: "", retention: "", payoff: "", cta: "" };
-  const pattern = /^(HOOK|RETENTION|PAYOFF|CTA)\s*[:：-]\s*(.*)$/i;
-  let active = "";
-  for (const line of raw.split("\n")) {
-    const match = line.match(pattern);
-    if (match) {
-      active = match[1].toLowerCase();
-      parts[active] = match[2].trim();
-    } else if (active) {
-      parts[active] = `${parts[active]} ${line}`.trim();
-    }
-  }
-  return parts.hook || parts.retention || parts.payoff || parts.cta ? parts : null;
-}
-
-function normalizeReelItem(item, index) {
-  const fromText = parseReelText(item?.text || item?.content || "") || {};
   return {
-    title: cleanText(item?.title || `فكرة Reel ${index + 1}`, 80),
-    hook: sanitizeGeneratedText(item?.hook || fromText.hook || "", 180),
-    retention: sanitizeGeneratedText(item?.retention || fromText.retention || "", 280),
-    payoff: sanitizeGeneratedText(item?.payoff || fromText.payoff || "", 450),
-    cta: sanitizeGeneratedText(item?.cta || fromText.cta || "", 220),
+    type: "object",
+    additionalProperties: false,
+    required: ["items"],
+    properties: {
+      items: {
+        type: "array",
+        minItems: 3,
+        maxItems: 3,
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["title", "text"],
+          properties: {
+            title: { type: "string", minLength: 2, maxLength: 80 },
+            text: { type: "string", minLength: 10, maxLength: 900 },
+          },
+        },
+      },
+    },
   };
 }
 
-function parseGeneratedItems(text, contentType) {
-  const cleaned = String(text || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
-  try {
-    const parsed = JSON.parse(cleaned);
-    const source = Array.isArray(parsed) ? parsed : parsed.items;
-    if (!Array.isArray(source)) throw new Error("Missing items array");
-    if (contentType === "reel") return source.slice(0, 3).map(normalizeReelItem);
-    return source
-      .slice(0, 3)
-      .map((item, index) => ({
-        title: cleanText(item?.title || `فكرة ${index + 1}`, 80),
-        text: sanitizeGeneratedText(item?.text || item?.content || "", 900),
-      }))
-      .filter((item) => item.text);
-  } catch (_) {
-    if (contentType === "reel") {
-      const single = normalizeReelItem({ text }, 0);
-      return single.hook || single.retention || single.payoff || single.cta ? [single] : [];
-    }
-    const fallbackText = sanitizeGeneratedText(text, 2000);
-    return fallbackText ? [{ title: "نتيجة الذكاء الاصطناعي", text: fallbackText }] : [];
-  }
-}
+function normalizeItems(payload, contentType) {
+  const source = Array.isArray(payload?.items) ? payload.items.slice(0, 3) : [];
+  if (source.length !== 3) return [];
 
-function structurallyUsable(text, items, contentType) {
-  const normalized = cleanText(text, 300).toLowerCase();
-  if (!normalized || /user safety|\bsafety:\s*safe\b|^safe$/i.test(normalized)) return false;
-  if (!Array.isArray(items) || !items.length) return false;
   if (contentType === "reel") {
-    if (items.length < 3) return false;
-    return !items.some((item) => !item?.hook || !item?.retention || !item?.payoff || !item?.cta);
+    return source.map((item, index) => ({
+      title: sanitizeText(item?.title || `فكرة ${index + 1}`, 80),
+      hook: sanitizeText(item?.hook, 180),
+      retention: sanitizeText(item?.retention, 280),
+      payoff: sanitizeText(item?.payoff, 450),
+      cta: sanitizeText(item?.cta, 220),
+    }));
   }
-  return items.some((item) => cleanText(item?.text, 200).length >= 12);
+
+  return source.map((item, index) => ({
+    title: sanitizeText(item?.title || `فكرة ${index + 1}`, 80),
+    text: sanitizeText(item?.text, 900),
+  }));
 }
 
-function itemText(item, contentType) {
-  return contentType === "reel"
-    ? [item?.title, item?.hook, item?.retention, item?.payoff, item?.cta].filter(Boolean).join(" ")
-    : [item?.title, item?.text].filter(Boolean).join(" ");
-}
-
-function qualityIssues(items, context) {
-  const sourceRaw = [context.business, context.market, context.details].filter(Boolean).join(" ");
-  const source = normalizeForScan(sourceRaw);
-  const outputRaw = items.map((item) => itemText(item, context.contentType)).join(" ");
-  const output = normalizeForScan(outputRaw);
-  const issues = [];
-
-  for (const group of CLAIM_GROUPS) {
-    const terms = group.terms.map(normalizeForScan);
-    const used = terms.some((term) => output.includes(term));
-    const grounded = terms.some((term) => source.includes(term));
-    if (used && !grounded) issues.push(`تفصيل غير مؤكد: ${group.label}`);
+function usableItems(items, contentType) {
+  if (!Array.isArray(items) || items.length !== 3) return false;
+  if (contentType === "reel") {
+    return items.every((item) => item.title && item.hook && item.retention && item.payoff && item.cta);
   }
-
-  if (context.language === "darija") {
-    const dialectFlags = DARIJA_RED_FLAGS.filter((term) => output.includes(normalizeForScan(term)));
-    if (dialectFlags.length) issues.push("تعبير غير مغربي");
-
-    const sourceLatin = new Set((sourceRaw.match(/[A-Za-zÀ-ÖØ-öø-ÿ]{2,}/g) || []).map((x) => x.toLowerCase()));
-    const allowedLatin = new Set([...sourceLatin, "reel", "tiktok", "instagram", "facebook", "whatsapp"]);
-    const foreign = (outputRaw.match(/[A-Za-zÀ-ÖØ-öø-ÿ]{3,}/g) || [])
-      .map((x) => x.toLowerCase())
-      .filter((x) => !allowedLatin.has(x));
-    if (foreign.length) issues.push("كلمات أجنبية غير مبررة");
-  }
-
-  const market = normalizeForScan(context.market);
-  if (market && !source.includes("وسط") && output.includes(`وسط ${market}`)) issues.push("موقع أدق غير مؤكد: وسط المدينة");
-  if (market && !source.includes("قلب") && output.includes(`قلب ${market}`)) issues.push("موقع أدق غير مؤكد: قلب المدينة");
-
-  return [...new Set(issues)];
+  return items.every((item) => item.title && item.text);
 }
 
 function modelCandidates(env) {
   return [
-    env.OPENROUTER_MODEL || "minimax/minimax-m3:free",
+    env.OPENROUTER_MODEL,
     "dots-studio/dots-3-note-preview:free",
-    "nvidia/nemotron-3.5-lightning:free",
     "openrouter/free",
+    "minimax/minimax-m3:free",
   ].filter((value, index, array) => value && array.indexOf(value) === index);
 }
 
-async function callModel(model, env, systemPrompt, userPrompt, temperature, contentType) {
+function parseStructuredContent(content) {
+  if (content && typeof content === "object" && !Array.isArray(content)) return content;
+  if (typeof content !== "string") return null;
+  const cleaned = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+  try {
+    return JSON.parse(cleaned);
+  } catch (_) {
+    return null;
+  }
+}
+
+async function callModel(model, env, systemPrompt, userPrompt, contentType, temperature) {
   let upstream;
   try {
     upstream = await fetch(OPENROUTER_URL, {
@@ -268,28 +194,43 @@ async function callModel(model, env, systemPrompt, userPrompt, temperature, cont
           { role: "user", content: userPrompt },
         ],
         temperature,
-        max_tokens: 1000,
+        max_tokens: 1200,
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: contentType === "reel" ? "qalam_reels" : "qalam_content",
+            strict: true,
+            schema: schemaFor(contentType),
+          },
+        },
+        provider: {
+          require_parameters: true,
+        },
       }),
     });
   } catch (_) {
-    return { ok: false, detail: "Could not reach OpenRouter", model };
+    return { ok: false, model, detail: "Could not reach OpenRouter" };
   }
 
   let data;
   try {
     data = await upstream.json();
   } catch (_) {
-    return { ok: false, detail: "Invalid response from OpenRouter", model };
+    return { ok: false, model, detail: `Invalid JSON from provider (${upstream.status})` };
   }
 
   if (!upstream.ok) {
-    return { ok: false, detail: cleanText(data?.error?.message || `Provider error ${upstream.status}`, 300), model };
+    return {
+      ok: false,
+      model,
+      detail: cleanText(data?.error?.message || `Provider error ${upstream.status}`, 260),
+    };
   }
 
-  const assistantText = extractAssistantText(data?.choices?.[0]?.message?.content);
-  const items = parseGeneratedItems(assistantText, contentType);
-  if (!structurallyUsable(assistantText, items, contentType)) {
-    return { ok: false, detail: "Model returned an unusable response", model: data?.model || model };
+  const parsed = parseStructuredContent(data?.choices?.[0]?.message?.content);
+  const items = normalizeItems(parsed, contentType);
+  if (!usableItems(items, contentType)) {
+    return { ok: false, model: data?.model || model, detail: "Structured output was missing or incomplete" };
   }
 
   return { ok: true, model: data?.model || model, items };
@@ -301,17 +242,26 @@ export default {
     const origin = request.headers.get("Origin") || "";
 
     if (url.pathname === "/health") {
-      return jsonResponse({ ok: true, service: "qalam-studio-ai", models: modelCandidates(env), qualityGate: "soft" }, 200, origin, env);
+      return jsonResponse({
+        ok: true,
+        service: "qalam-studio-ai",
+        structuredOutput: true,
+        models: modelCandidates(env),
+      }, 200, origin, env);
     }
-    if (url.pathname !== "/api/generate") return jsonResponse({ error: "Not found" }, 404, origin, env);
+
+    if (url.pathname !== "/api/generate") {
+      return jsonResponse({ error: "Not found" }, 404, origin, env);
+    }
 
     if (request.method === "OPTIONS") {
       if (!isAllowedOrigin(origin, env)) return jsonResponse({ error: "Origin not allowed" }, 403, origin, env);
       return new Response(null, { status: 204, headers: corsHeaders(origin, env) });
     }
+
     if (request.method !== "POST") return jsonResponse({ error: "Method not allowed" }, 405, origin, env);
     if (!isAllowedOrigin(origin, env)) return jsonResponse({ error: "Origin not allowed" }, 403, origin, env);
-    if (!env.OPENROUTER_API_KEY) return jsonResponse({ error: "Server is missing OPENROUTER_API_KEY" }, 500, origin, env);
+    if (!env.OPENROUTER_API_KEY) return jsonResponse({ error: "Server configuration error" }, 500, origin, env);
 
     let body;
     try {
@@ -326,105 +276,75 @@ export default {
     const contentType = normalizeChoice(body?.contentType, CONTENT_TYPES, "mixed");
     const tone = normalizeChoice(body?.tone, TONES, "professional");
     const language = normalizeChoice(body?.language, LANGUAGES, "darija");
+
     if (!business) return jsonResponse({ error: "business is required" }, 400, origin, env);
 
     const market = city || "المغرب";
-    const verifiedFacts = details
-      ? `تفاصيل إضافية موثوقة أعطاها المستخدم: ${details}`
-      : "لا توجد تفاصيل إضافية موثوقة. لا تفترض أي منتج، طبق، خدمة، ميزة، مكوّن، سعر، عرض، جمهور فرعي أو خاصية غير مذكورة.";
-
+    const facts = details || "لا توجد تفاصيل إضافية موثوقة";
     const reelRules = contentType === "reel"
       ? [
-          "قواعد Reel/TikTok إلزامية:",
-          "- كل نتيجة قصيرة ومناسبة لفيديو قصير.",
-          "- HOOK بين 3 و12 كلمة ويشد الانتباه بسرعة.",
-          "- RETENTION جملة واحدة تفتح loop أو تعطي سبباً للاستمرار.",
-          "- PAYOFF جملة أو جملتان مبنية حصراً على facts المتوفرة.",
-          "- CTA جملة قصيرة وطبيعية.",
-          "- كل جزء عنده field خاص به في JSON؛ ما تكتبش labels داخل النصوص.",
+          "بالنسبة لكل Reel:",
+          "HOOK قصير جداً وقوي ومناسب لأول 1–3 ثواني، وما يفوتش 12 كلمة تقريباً.",
+          "RETENTION جملة واحدة تفتح الفضول أو تعطي سبباً واضحاً للاستمرار.",
+          "PAYOFF جملة أو جوج فقط، مبنية حصراً على المعلومات المؤكدة.",
+          "CTA قصير وطبيعي ومناسب للهدف.",
+          "النتيجة كاملة خاصها تكون قصيرة وماشي فقرة طويلة.",
         ].join("\n")
-      : "حافظ على النص مختصراً وقابلاً للنشر مباشرة بدون حشو.";
-
-    const outputSchema = contentType === "reel"
-      ? '{"items":[{"title":"...","hook":"...","retention":"...","payoff":"...","cta":"..."},{"title":"...","hook":"...","retention":"...","payoff":"...","cta":"..."},{"title":"...","hook":"...","retention":"...","payoff":"...","cta":"..."}]}'
-      : '{"items":[{"title":"...","text":"..."},{"title":"...","text":"..."},{"title":"...","text":"..."}]}';
+      : "خلي كل نتيجة مختصرة، محددة، وجاهزة للنشر مباشرة.";
 
     const systemPrompt = [
-      "أنت Senior Direct-Response Copywriter وContent Strategist داخل Qalam Studio، متخصص في السوق المغربي وTikTok وInstagram Reels والمحتوى التجاري القصير.",
+      "أنت Senior Direct-Response Copywriter وContent Strategist داخل Qalam Studio، متخصص في السوق المغربي.",
       LANGUAGES[language],
       TONES[tone],
       CONTENT_TYPES[contentType],
-      `السياق المؤكد: النشاط هو ${business}، والسوق/المدينة هي ${market}.`,
-      verifiedFacts,
-      "الحقائق الوحيدة المسموح تقديمها كحقائق هي النشاط، المدينة/السوق، والتفاصيل الإضافية التي كتبها المستخدم.",
-      "ممنوع تضيف من راسك أطباقاً أو منتجات أو أياماً أو إطلالات أو تراساً أو توصيلاً أو حجزاً أو مكونات أو مزايا أو أسعاراً أو عروضاً أو أجواء خاصة أو موقعاً أدق داخل المدينة.",
-      "إذا كانت التفاصيل قليلة، استعمل الفضول والمشكلة والرغبة والسلوك بدل اختراع facts جديدة.",
-      "النتائج الثلاثة لازم تختلف في الزاوية، وليس فقط في الكلمات.",
+      `النشاط المؤكد: ${business}.`,
+      `المدينة/السوق المؤكد: ${market}.`,
+      `التفاصيل الإضافية المؤكدة: ${facts}.`,
+      "Grounding rule صارم: ممنوع تقدم كحقيقة أي طبق، منتج، خدمة، ميزة، عرض، يوم، مكوّن، موقع أدق، أجواء، سعر، رقم، أو معلومة ما موجوداش صراحة فالمعطيات المؤكدة.",
+      "إذا احتجت تكون Specific وما عندكش fact كافي، استعمل مشكلة/رغبة/سؤال مرتبط بالفئة بدل اختراع معلومة.",
+      "ممنوع أرقام هاتف، روابط، أثمنة، خصومات، تقييمات أو placeholders مخترعة.",
+      "إذا اللغة دارجة، ممنوع كلمات غريبة أو ترجمة حرفية؛ خليه كلام مغربي طبيعي وبسيط.",
+      "الاقتراحات الثلاثة خاصها تختلف فعلاً في الزاوية النفسية، ماشي غير تبديل الكلمات.",
       reelRules,
-      "ممنوع اختراع أرقام هاتف أو واتساب أو روابط أو عناوين أو أثمنة أو خصومات أو ساعات عمل أو تقييمات أو أعداد زبائن.",
-      "إذا احتجت CTA استعمل صياغة عامة مثل: تواصل معنا، راسلنا، شارك رأيك، احفظ الفيديو، أو زورنا.",
-      "أرجع JSON صالح فقط بدون Markdown وبدون أي نص خارج JSON.",
-      `الصيغة المطلوبة بالضبط: ${outputSchema}`,
+      "أرجع فقط البيانات المطلوبة حسب JSON Schema، بدون Markdown وبدون شرح.",
     ].join("\n");
 
     const userPrompt = [
       `النشاط: ${business}`,
       `المدينة/السوق: ${market}`,
-      `تفاصيل النشاط الموثوقة: ${details || "غير متوفرة"}`,
+      `التفاصيل الموثوقة: ${facts}`,
       `نوع المحتوى: ${contentType}`,
       `النبرة: ${tone}`,
       `اللغة: ${language}`,
-      "أنشئ 3 اقتراحات مختلفة جذرياً، جاهزة للنشر، ومبنية حصراً على المعلومات أعلاه.",
+      "ولّد 3 اقتراحات مختلفة جذرياً وجاهزة للنشر، والتزم فقط بالحقائق أعلاه.",
     ].join("\n");
 
-    const context = { business, market, details, contentType, language };
     const errors = [];
-    let best = null;
-
     for (const model of modelCandidates(env)) {
       const result = await callModel(
         model,
         env,
         systemPrompt,
         userPrompt,
-        contentType === "reel" || tone === "playful" ? 0.68 : 0.60,
         contentType,
+        contentType === "reel" || tone === "playful" ? 0.68 : 0.58,
       );
 
-      if (!result.ok) {
-        errors.push(`${model}: ${result.detail}`);
-        continue;
-      }
-
-      const issues = qualityIssues(result.items, context);
-      const candidate = { ...result, issues };
-      if (!best || candidate.issues.length < best.issues.length) best = candidate;
-
-      if (issues.length === 0) {
+      if (result.ok) {
         return jsonResponse({
           ok: true,
           model: result.model,
-          quality: "passed",
           request: { contentType, tone, language, hasDetails: Boolean(details) },
           items: result.items,
         }, 200, origin, env);
       }
+      errors.push(`${model}: ${result.detail}`);
     }
 
-    if (best) {
-      return jsonResponse({
-        ok: true,
-        model: best.model,
-        quality: "best_available",
-        qualityFlags: best.issues,
-        request: { contentType, tone, language, hasDetails: Boolean(details) },
-        items: best.items,
-      }, 200, origin, env);
-    }
-
+    console.error("Qalam OpenRouter generation failed", errors);
     return jsonResponse({
-      error: "All OpenRouter models failed",
-      detail: cleanText(errors.join(" | "), 700),
+      error: "AI_TEMPORARILY_UNAVAILABLE",
+      detail: "تعذر توليد المحتوى حالياً. جرّب مرة أخرى بعد لحظات.",
     }, 502, origin, env);
   },
 };
